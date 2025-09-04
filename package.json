@@ -1,6 +1,6 @@
 {
   "name": "AdVizualyze",
-  "version": "1.0.0",
+  "version": "1.2.0",
   "description": "aplicacion para el publisidad en smart tv",
   "main": "main.js",
   "scripts": {
