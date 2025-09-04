@@ -1,0 +1,40 @@
+{
+  "name": "AdVizualyze",
+  "version": "1.0.0",
+  "description": "aplicacion para el publisidad en smart tv",
+  "main": "main.js",
+  "scripts": {
+    "start":"electron .",
+    "pack":"electron-builder --dir",
+    "dist":"build --win",
+    "build":"electron-builder build --win --publish never",
+    "deploy":"electron-builder build  --win --publish always"
+  },
+  "keywords": [
+    "Javascript",
+    "Publish"
+  ],
+  "author": "Luis Edgardo Duno Castellano",
+  "license": "ISC",
+  "build": {
+    "appId": "com.AdVizualyze.app",
+    "productName": "AdVizualyze",
+    "asar": false,
+    "win": {
+      "icon": "build/icon.ico",
+      "target": [
+        "NSIS"
+      ]
+    }
+  },
+  "devDependencies": {
+    "electron": "^13.6.9",
+    "electron-builder": "^24.4.0"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "socket.io": "^4.0.2",
+    "socket.io-client": "^4.6.1",
+    "uuid": "^9.0.1"
+  }
+}

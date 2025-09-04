@@ -1,0 +1,231 @@
+<html>
+
+<style type="text/css">
+
+*{
+        margin: 0px;
+        padding: 0px;
+
+}
+
+
+
+
+
+.containner_article {
+     
+ display: grid;/*
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);*/
+  grid-gap: 5px;
+
+
+    height: 100vh;
+    max-width: 100%;
+
+    padding:7px;
+
+justify-items:center;
+align-items: center;
+/*
+background: red*/
+}
+
+
+.article {
+    display: flex;
+    flex-direction: column-reverse;
+    justify-content: center;
+    align-content: center;
+    align-items: center;
+    width: 150px;
+    height: 150px;
+    /*background: #acaf0069;*/
+}
+
+.titulo {
+    font-size: 35px;
+    color: white;
+    font-weight: bold;
+}
+.containner_text{    width: 100%;
+    height: 100%;}
+
+
+.imagen {
+    width: 100%;
+    height: 100%;
+    /* object-fit: cover; */
+    border-radius: 50px;
+}
+
+.slideshow {
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+
+}
+
+.slide {
+  width: 100%;
+  height: 100%;
+  display: none;
+
+      background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+.slide:first-child {
+  display: block;
+}
+
+/**************/
+</style>
+
+<main class="slideshow" id="contenedor">
+
+
+</main>
+<audio id="audio" src="" loop autoplay=""></audio>
+<script src="assets/publish_assets/javascript/Socket.IOv3.0.1.js"></script>
+<script type="text/javascript">
+
+let  socket = io("http://192.168.1.70:3000",{
+
+   withCredentials:true,
+
+});
+
+socket.on("connect",() => {
+
+    console.log(`Connected to server`,socket.id);
+
+});
+
+// Escuchar eventos del servidor
+socket.on('mensaje', (mensaje) => {
+     console.log('Mensaje recibido del cliente 1:', mensaje);
+});
+
+
+
+
+// Escuchar eventos del servidor
+socket.on("Select-Musica", (data) => {
+
+  console.log('la musixa es :',data);
+
+  var audio = document.getElementById('audio');
+  audio.src = data;
+
+
+
+});
+
+  document.addEventListener("mousemove", function(event) {
+  var x = event.clientX;
+  var y = event.clientY;
+  console.log("Posición del mouse: X = " + x + ", Y = " + y);
+
+  audio.play();
+});
+
+
+
+socket.on("Play", (data) => {
+  
+        audio.play();
+
+});
+socket.on("Pause", (data) => {
+  
+        audio.pause();
+
+});
+
+socket.on("Volumen", (data) => {
+  
+        audio.volume = data;
+
+});
+
+
+socket.on("data-publish", (data) => {
+  
+        Render_data(data)
+
+});
+
+
+    var slides = document.getElementsByClassName("slide");
+    var currentSlide = 0;
+
+    function showSlide(){        
+        for (var i = 0; i < slides.length; i++) {       
+              slides[i].style.display = "none";
+        }
+       
+        slides[currentSlide].style.display = "block";
+    }
+
+    function nextSlide(){
+          currentSlide++;
+		        if (currentSlide >= slides.length) {
+		            currentSlide = 0;
+		        }
+        showSlide();
+    }
+
+if(document.getElementById("contenedor").childNodes.length>0){
+
+  setInterval(nextSlide,1000);
+
+}
+        
+
+/**************************************************************/
+
+/*****************************************/
+
+let Contain_areas = document.getElementById("contenedor");
+
+function Render_data(data){
+
+
+        Contain_areas.innerHTML="";
+
+
+        data.forEach(function(area,index){
+                                
+Contain_areas.innerHTML += `<section class="slide" style="background-image: url('${area.image_background}')">
+
+<div class="containner_article" style=" grid-template-columns: repeat(${area.section[0]}, 1fr); grid-template-rows: repeat(${area.section[1]}, 1fr);"></div> 
+</section>`; 
+
+
+        let area_product =  document.getElementsByClassName("containner_article")[index];
+
+                area.product.forEach(function(product,index){
+
+area_product.innerHTML+=`<article class="article" id="article" style="grid-area:${product.pos[0]}/${product.pos[1]};">
+   
+        <div class="containner_text">
+        <img src="${product.image}" alt="Descripción de la imagen" class="imagen" id="imagen">
+        </div>
+        </article>`;
+
+
+
+               })
+
+
+});
+
+
+}
+
+
+
+</script>
+</html>
