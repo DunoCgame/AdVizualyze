@@ -1,14 +1,14 @@
 {
   "name": "AdVizualyze",
-  "version": "1.2.0",
+  "version": "2.0.0",
   "description": "aplicacion para el publisidad en smart tv",
-  "main": "main.js",
+  "main": "app/main.js",
   "scripts": {
-    "start":"electron .",
-    "pack":"electron-builder --dir",
-    "dist":"build --win",
-    "build":"electron-builder build --win --publish never",
-    "deploy":"electron-builder build  --win --publish always"
+    "start": "electron .",
+    "pack": "electron-builder --dir",
+    "dist": "build --win",
+    "build": "electron-builder build --win --publish never",
+    "deploy": "electron-builder build  --win --publish always"
   },
   "keywords": [
     "Javascript",
@@ -19,7 +19,10 @@
   "build": {
     "appId": "com.AdVizualyze.app",
     "productName": "AdVizualyze",
-    "asar": false,
+    "asar": true,
+    "extraResources": [
+      "data_app/**"
+    ],
     "win": {
       "icon": "build/icon.ico",
       "target": [

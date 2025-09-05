@@ -1,0 +1,197 @@
+<html>
+
+<style type="text/css">
+
+*{
+        margin: 0px;
+        padding: 0px;
+
+}
+
+.containner_article {
+    display: grid;
+    /*grid-gap: 5px;*/
+    height: 100vh;
+    padding: 0.8px;
+
+}
+
+
+.article {
+  /*
+    height: 200px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 200px 200px;
+    background: red;
+
+    width: 100%;
+    height:100%;
+   
+
+    width:100%;
+    height:100%;
+    background:yellow; */
+}
+
+.article {
+    width:100%;
+    height:100%;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
+}
+
+
+.slideshow {
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+
+}
+
+.slide {
+    width: 100%;
+    height: 100%;
+    display: none;
+
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+.slide:first-child {
+    display: block;
+}
+
+/**************/
+</style>
+
+<main class="slideshow" id="contenedor">
+
+</main>
+<audio id="audio" src="" loop autoplay=""></audio>
+<script src="assets/publish_assets/javascript/Socket.IOv3.0.1.js"></script>
+<script type="text/javascript">
+
+
+let socket = io("http://192.168.1.70:3000",{
+
+   withCredentials:true,
+
+});
+
+socket.on("data-publish", (data) => {
+  
+        Render_data(data)
+
+});
+
+
+socket.on("Select-Musica", (data) => {
+
+  console.log('la musixa es :',data);
+
+  var audio = document.getElementById('audio');
+  audio.src = data;
+
+});
+
+
+socket.on("Play", (data) => {
+  
+        audio.play();
+
+});
+
+socket.on("Pause", (data) => {
+  
+        audio.pause();
+
+});
+
+socket.on("Volumen", (data) => {
+  
+        audio.volume = data;
+
+});
+
+var slides = document.getElementsByClassName("slide");
+var currentSlide = 0;
+
+
+document.addEventListener("mousemove", function(event) {
+
+    audio.play();
+    
+});
+
+function showSlide(){        
+        for (var i = 0; i < slides.length; i++) {       
+              slides[i].style.display = "none";
+        }
+       
+        slides[currentSlide].style.display = "block";
+}
+
+
+
+function nextSlide(){
+          currentSlide++;
+                if (currentSlide >= slides.length) {
+                    currentSlide = 0;
+                }
+        showSlide();
+}
+
+if(document.getElementById("contenedor").childNodes.length>0){
+
+ setInterval(nextSlide,2500);
+
+}
+    
+/**************************************************************/
+
+/***********************************/
+
+let Contain_areas = document.getElementById("contenedor");
+
+function Render_data(data){
+
+    console.log(data)
+    Contain_areas.innerHTML="";
+
+    data.forEach(function(area,index){
+                
+    Contain_areas.innerHTML += `<section class="slide" style="background-image: url('${area.image_background}')"><div class="containner_article" style=" grid-template-columns: repeat(${area.section[0]}, 1fr); grid-template-rows: repeat(${area.section[1]}, 1fr);"></div> 
+    </section>`; 
+
+    let area_product =  document.getElementsByClassName("containner_article")[index];
+
+        area.product.forEach(function(product,index){
+
+            area_product.innerHTML+=`<article class="article" id="article" style="grid-area:${product.pos};background-image: url('${product.image}"></article>`;
+
+        })
+    });
+
+}
+
+
+
+function getRandomColor() {
+    const letters = '0123456789ABCDEF';
+    let color = '#';
+    for (let i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+}
+
+
+</script>
+</html>

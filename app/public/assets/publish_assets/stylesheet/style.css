@@ -22,14 +22,7 @@ main{
 	height: 300px;
 	overflow: hidden;
 
-	/************
-	display: grid;
-	grid-gap: 0px;
-	grid-template-columns: repeat(2,1fr);
-	grid-template-rows: auto;
-*********/
-
-        display: grid;
+  display: grid;
   grid-auto-rows: 100px; /* Establece el tamaño de las filas automáticas */
   grid-auto-columns: 200px; /* Establece el tamaño de las columnas automáticas */
   grid-gap: 10px; /* Espacio entre las celdas de la cuadrícula */
