@@ -6,7 +6,8 @@ let Group_Image = []
 
 const PathDB = require(path.join(__dirname,'Path_db.js'));
 
-let Type_action=""
+let Type_action="";
+
 function Open_Image_Select(mainWindow,action){
 
 				console.log("Area ",action)
@@ -54,7 +55,7 @@ function Saving_image(addres,mainWindow){
 	        } else {
 	            console.log("Archivo copiado exitosamente:", dest);
 
-	            if(Type_action=="producto"){
+	        if(Type_action=="producto"){
 
 	            	mainWindow.send("Imagen-select-product","http://"+IP["address"]+":"+"3000"+"/"+path.basename(addres.toString()))        
 

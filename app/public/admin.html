@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Publish System</title>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Descripción de la página" class="meta-descripcion" id="meta-descripcion">
@@ -9,75 +8,134 @@
   <meta name="author" content="Nombre del autor" class="meta-autor" id="meta-autor">
   <link rel="stylesheet" type="text/css" href="assets/admin_assets/stylesheets/style-estructure.css">
   <link rel="stylesheet" type="text/css" href="assets/admin_assets/stylesheets/style-reproductor.css">
+  <link rel="stylesheet" type="text/css" href="assets/admin_assets/stylesheets/styleColorSelectSquare.css">
   <link rel="stylesheet" type="text/css" href="assets/admin_assets/icono/style.css">
 </head>
-<body class="control-app">
+<div id="containnerContador">
+  <label id="Contador"></label>
+</div>
+<body class="control-app" id="app">
       <div class="Containner-area" id="container_area">          
-      </div>     
+      </div>  
       <div class="Control-imagen">
         <select id="SectionControl_Select_Section" onchange="Selectror_de_areas()">
               <option value="null">Selecionar Area</option>
         </select>
-         <button id="SectionControl_btn_Add_section" onclick="Adding_area()">+</button>
+         <button id="SectionControl_btn_Add_section" class="btnEfect" onclick="Adding_area()">+</button>
           <div id="containner-servidor">
             Servidor:<span id="servidor"></span>
           </div>
       </div>
       <div class="Music">
-        <div class="reproductor">
-              <section class="btn-container">
-                    <audio id="audio"></audio>
-                    <div>
-                      <button class="icon-previous2 btn-music Anterior" id="previo" ></button>
-                      <button id="play-pause" class="icon-play3 btn-music play_pause"></button>
-                      <button class="icon-next2 btn-music Siguiente"  id="siguiente" ></button>
-                    </div>  
-                    <div>
-                      <button class="icon-music btn-music select-music" id="select-music" onclick="select_song()"></button>
-                    </div>  
-              </section>
-                <!----------------->
-              <section class="volumen-containner">
-                  <div>
-                  <span>Audio Interno</span>
-                 </div>
-                  <div>
-                   <span class="icon-volume-decrease"></span>  
-                   <input type="range" id="volumen" min="0" max="1" step="0.1" value="1">
-                   <span class="icon-volume-increase"></span>
-                 <div>
-              </section>   
-
-               <section class="volumen-containner-ext">
-                  <div>
-                    <span>Audio Externo</span>
-                  </div>
-                  <div>
-                     <span class="icon-volume-decrease"></span>   
-                     <input type="range" id="volumen_externo" min="0" max="1" step="0.1" value="1">
-                     <span class="icon-volume-increase"></span>
-                  </div>
-              </section>
-                    <!----------------->
-              <section class="containner-progres-bar">
-                  <section class="base-progres-bar">
-                       <div id="progress-bar"></div>
+            <div class="reproductor">
+                  <section class="btn-container">
+                        <audio id="audio"></audio>
+                        <div>
+                          <button class="icon-previous2 btn-music Anterior" id="previo" ></button>
+                          <button id="play-pause" class="icon-play3 btn-music play_pause"></button>
+                          <button class="icon-next2 btn-music Siguiente"  id="siguiente" ></button>
+                        </div>  
+                        <div>
+                          <button class="icon-music btn-music select-music" id="select-music" onclick="select_song()"></button>
+                        </div>  
                   </section>
-              </section>
                     <!----------------->
-              <section class="containner-musica">
-                <select class="select-musica" id="name_select_music" onchange="obtenerValor()">
-                  <option>musica</option>
-                </select>
-              </section>
+                  <section class="volumen-containner">
+                      <div>
+                      <span>Audio Interno</span>
+                     </div>
+                      <div>
+                       <span class="icon-volume-decrease"></span>  
+                       <input type="range" id="volumen" min="0" max="1" step="0.1" value="1">
+                       <span class="icon-volume-increase"></span>
+                     <div>
+                  </section>   
+
+                   <section class="volumen-containner-ext">
+                      <div>
+                        <span>Audio Externo</span>
+                      </div>
+                      <div>
+                         <span class="icon-volume-decrease"></span>   
+                         <input type="range" id="volumen_externo" min="0" max="1" step="0.1" value="1">
+                         <span class="icon-volume-increase"></span>
+                      </div>
+                  </section>
+                        <!----------------->
+                  <section class="containner-progres-bar">
+                      <section class="base-progres-bar">
+                           <div id="progress-bar"></div>
+                      </section>
+                  </section>
+                        <!----------------->
+                  <section class="containner-musica">
+                    <select class="select-musica" id="name_select_music" onchange="obtenerValor()">
+                      <option>musica</option>
+                    </select>
+                  </section>
+            </div>
       </div>
-  </div>
 </body>
 <script type="text/javascript" src="assets/admin_assets/icono/selection.json"></script>
 <script type="text/javascript" src="assets/admin_assets/javascript/Socket.IOv3.0.1.js"></script>
 <script type="text/javascript" src="assets/admin_assets/javascript/server_client.js"></script>
 <script type="text/javascript" src="assets/admin_assets/javascript/main.js"></script>
 <script type="text/javascript" src="assets/admin_assets/javascript/music_control.js"></script>
+<script type="text/javascript">
 
+api.receive("data-time-counter",(event,objetoTiempo)=>{
+
+    /*------------------------------------------*/
+     let containner = document.getElementById("containnerContador");
+     let Contador = document.getElementById("Contador");
+
+  function actualizarContador(){
+       
+        const tiempoInicial = new Date(objetoTiempo.TiempoInicial).getTime();
+        const tiempoFinal = new Date(objetoTiempo.TiempoFinal).getTime();        
+        const ahora = new Date().getTime();
+        const tiempoRestante = tiempoFinal - ahora;
+
+         // Validar que la hora actual sea posterior al TiempoInicial
+        if (ahora < tiempoInicial) {
+            Contador.innerHTML = "Esperando inicio...";
+            return; // No hacer nada más hasta que el tiempo inicial haya pasado
+        }
+
+        if (tiempoRestante<= 0) {
+            clearInterval(intervalo);
+            Contador.innerHTML = "¡Tiempo terminado!";
+            return;
+        }
+
+        const dias = Math.floor(tiempoRestante / (1000 * 60 * 60 * 24));
+        const horas = Math.floor((tiempoRestante % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutos = Math.floor((tiempoRestante % (1000 * 60 * 60)) / (1000 * 60));
+        const segundos = Math.floor((tiempoRestante % (1000 * 60)) / 1000);
+
+        Contador.innerHTML = `${horas} hr ${minutos} min ${segundos} seg`;
+       
+    }
+
+   setTimeout(function(){
+      actualizarContador();
+   },1000) // Actualizar el contador inmediatamente y luego cada segundo
+   
+   const intervalo = setInterval(actualizarContador, 1000);
+    /*------------------------------------------*/
+    
+  
+});
+
+/*
+window.addEventListener('beforeunload', function (e) {
+
+  console.log("cierre pagina")
+
+  api.send("cierre-de-aplicacion",new Date())
+
+})
+*/
+</script>
 
 </html>

@@ -12,13 +12,12 @@ module.exports = function Server_system(){
             const server = http.createServer(app);
             const { Server } = require("socket.io");
             const io = new Server(server,{
-                            cors: { origin: '*' }
-                    });
+                    cors: { origin: '*' }
+                });
 
             const PathDB = require(path.join(__dirname,'Path_db.js'));
             const App_config = require(PathDB.App_config)
-            const Data_App = require(PathDB.Data)
-            const time = require(PathDB.time)
+            const Data_App = require(PathDB.data_square)
 
             const val = Object.values(os.networkInterfaces());
             const dataOs = val.flat().find(objeto => objeto.internal === false && objeto.family === 'IPv4');
@@ -34,10 +33,7 @@ module.exports = function Server_system(){
 
             // Manejo de rutas
             app.get(PathDB.data_app, (req, res) => {
-              res.sendFile(PathDB.Data);
-
-              /*const data = { message: 'Hello, world!', value: 42 };
-                    res.json(data);*/
+              res.sendFile(PathDB.data_square);
             });
 
             // Manejo de errores 404
@@ -57,18 +53,15 @@ io.on('connection', (socket) => {
     
     console.log('Un usuario se ha conectado');
 
-   io.emit("data-publish",Data_App);
+    io.emit("data-publish",Data_App);
 
     socket.on('Select-Musica', (mensaje) => {
-       
-            //console.log('Mensaje recibido: ' + mensaje); 
-            io.emit('Select-Musica', mensaje);  
 
+            io.emit('Select-Musica', mensaje);  
     });
 
     socket.on('Play', (mensaje) => {
         
-            console.log('Mensaje recibido: ' + mensaje);
             io.emit('Play');
     });
 
@@ -79,23 +72,23 @@ io.on('connection', (socket) => {
 
     });
 
-        socket.on("Volumen", (data) => {
+    socket.on("Volumen", (data) => {
 
             io.emit('Volumen',data);
+    })
 
+    fs.watch(PathDB.data_square,(eventType, filename) => {
+            
+                fs.readFile(PathDB.data_square,(err, data) => {
+                                
+                    if (err) throw err;
 
-        })
+                    io.emit("data-publish",JSON.parse(data));
+                })
 
-        fs.watch(PathDB.Data,(eventType, filename) => { 
-                
-                    fs.readFile(PathDB.Data,(err, data) => {
-                                    
-                                    if (err) throw err;
+            console.log("reload data server");
 
-                                io.emit("data-publish",JSON.parse(data));
-                    })
-
-        });
+    });
 
 
     // Manejo de la desconexión

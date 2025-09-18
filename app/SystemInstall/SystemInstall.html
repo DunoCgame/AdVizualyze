@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" >
+<meta name="viewport" content="width=device-width,user-scalable=no,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0">
+</head>
+<style type="text/css">
+	*{
+		margin: 0px;
+		padding: 0px;
+	}
+#containner_bienvenida{
+   background: linear-gradient(130deg, #0099ff 0%, #009068 100%);
+  
+    height: 100vh;
+}
+
+.saludo {
+    color: white;
+    font-size: 118px;
+}
+
+#containner_control_install{
+	 background: linear-gradient(130deg, #0099ff 0%, #009068 100%);
+
+    height: 100vh;
+}
+
+
+/*-------------------------------*/
+.Show-area{
+	  display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    align-items: center;
+}
+.Hide-area{
+	display: none;
+}
+/*-------------------------------*/
+
+.title-system-install {
+    color: white;
+    font-size: 43px;
+}
+.containner-scan {
+
+    background: black;
+
+}
+.containner-btn {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}
+.text-trial {
+    color: white;
+    font-weight: bold;
+}
+.btn-select-imagen {
+    color: white;
+    background: linear-gradient(to bottom left, #660066 0%, #660033 100%);
+    padding: 15px;
+    border-style: none;
+}
+.btn-Activar-trial {
+    padding: 9px;
+    background: linear-gradient(to bottom right, #009900 0%, #669900 100%);
+    color: white;
+    border-style: none;
+    margin-left: 4px;
+}
+
+/*---------------Qr code style-----------------*/
+#reader{
+
+    width: 368px;
+}
+#qr-shaded-region{
+    position: absolute;
+    border-width: 14px 27px;
+    border-style: solid;
+    border-color: rgba(0, 0, 0, 0.48);
+    box-sizing: border-box;
+    inset: 0px;
+}
+/*---------------Qr code style-----------------*/
+/*-------------------Efecto css-----------------------*/
+.boton-pulsante {
+  /* Estilos base del botón */
+  display: inline-block;
+  text-align: center;
+  text-decoration: none;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out; /* Suaviza las transiciones */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Sombra sutil */
+}
+
+/* Efecto de pulso al pasar el cursor */
+.boton-pulsante:hover {
+  transform: scale(1.05); /* Ligeramente más grande */
+  box-shadow: 0 6px 10px rgba(0, 123, 255, 0.4); /* Sombra más pronunciada y con color */
+  animation: pulse 1.5s infinite; /* Aplica la animación de pulso */
+}
+
+/* Definición de la animación de pulso */
+@keyframes pulse {
+  0% {
+    box-shadow: 0 4px 6px rgba(0, 123, 255, 0.1);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 8px 12px rgba(0, 123, 255, 0.6);
+    transform: scale(1.08);
+  }
+  100% {
+    box-shadow: 0 4px 6px rgba(0, 123, 255, 0.1);
+    transform: scale(1);
+  }
+}
+
+
+/**************animacion*****************/
+.pulse-glow{
+  animation: pulse-glow 2s infinite;
+}
+@keyframes pulse-glow {
+0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 #8bc34a;
+}
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 0 0 10px rgba(52, 152, 219, 0);
+  }
+}
+/*******************************/
+.btn-select-imagen:hover{
+ background: linear-gradient(to bottom left, #660066 0%, #d43886 100%);
+}
+
+
+/*-------------------Efecto css-----------------------*/
+</style>
+<body>
+<section class="Show-area" id="containner_bienvenida">
+	<h1 class="saludo">Bienvenida</h1>
+</section>
+<section class="Hide-area" id="containner_control_install">                              
+			<h1 class="title-system-install">Sistema de instalación de Aplicación</h1>
+			<div class="containner-scan">
+				 <div id="reader" style="width: 400px"></div>
+			</div>
+			<section class="containner-btn">
+				<label for="mi-input-file" id="label_input_file" class="btn-select-imagen ">Seleccionar archivo</label>
+		        <input type="file" id="mi-input-file" style="display: none;">
+				<br>
+			<label class="text-trial">Activar sistema de Prueba de 24hr
+				<button class="btn-Activar-trial pulse-glow" id="btn_Activar_trial" onclick="Trial_app()">
+					Activar Prueba
+				</button>
+			</label>
+			</section>
+</section>
+</body>
+<script src="html5-qrcode.min.js"></script>
+<script src="qrcode.js"></script>
+<script src="jsQR.js"></script>
+<script src="AudioSpeak.js"></script>
+<script type="text/javascript">
+	
+window.addEventListener("load", (event) => {
+
+    Speak("Bienvenido");
+      
+	setTimeout(function(){
+
+		document.getElementById("containner_bienvenida").classList.replace("Show-area","Hide-area")
+		document.getElementById("containner_control_install").classList.replace("Hide-area","Show-area")
+
+	   	if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia){
+
+		        setTimeout(function(){
+
+		               		let html5QrCode = new Html5Qrcode("reader");
+		                        /*activate scaner*/
+		                    html5QrCode.start({ facingMode: "environment" }, {
+		                              fps: 40,                          
+		                              qrbox: { width:350, height: 270 }
+		                    },(qrCodeMessage) => {
+		                        console.log(qrCodeMessage)
+
+		                        api.send('code-app-activate',qrCodeMessage);
+
+		                    },(errorMessage) => {
+
+		                        /*ErrorMessage(TitleError,TextError)*/
+		                   });
+
+		        },1000)
+
+	    } 
+	    else {
+	          console.log("No hay cámara disponible");
+	    }  
+
+	},2000);
+
+    const imagenInput = document.getElementById("mi-input-file");
+
+    imagenInput.addEventListener("change", function(event) {
+            
+            const imagenSeleccionada = event.target.files[0];
+            const reader = new FileReader();
+
+            reader.onload = function(event) {
+                const imagen = new Image();
+                imagen.src = event.target.result;
+
+                imagen.onload = function() {
+                    const canvas = document.createElement("canvas");
+                    const context = canvas.getContext("2d");
+                    canvas.width = imagen.width;
+                    canvas.height = imagen.height;
+                    context.drawImage(imagen, 0, 0, imagen.width, imagen.height);
+                    const imageData = context.getImageData(0, 0, imagen.width, imagen.height);
+                    const code = jsQR(imageData.data, imageData.width, imageData.height);
+                       if (code) {
+                         
+                         console.log("Código QR detectado:", code.data);
+                         //
+                         api.send('code-app-activate',code.data);
+
+                        } else {
+
+                          //  ErrorMessage(TitleError,TextError)
+
+                    console.log("Escaneo erróneo. No se detectó ningún código QR.");
+                      
+                        }
+                };
+            };
+
+            reader.readAsDataURL(imagenSeleccionada);
+    });
+})
+/*-------------------------------------------------------------------*/
+let TiempoInicial;
+let TiempoFinal;
+
+function Trial_app(){
+
+	TiempoInicial = new Date();
+	TiempoFinal = new Date(TiempoInicial.getTime() + 24 * 60 * 60 * 1000);
+
+	api.send("Time-trial-system-activate",{
+					"TiempoInicial":TiempoInicial,
+					"TiempoFinal":TiempoFinal
+					})
+
+	api.send("App-trial-system")
+}
+
+		
+
+
+</script>
+</html>

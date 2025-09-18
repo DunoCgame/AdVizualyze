@@ -66,7 +66,6 @@ api.receive("Render-Data-reload-change",(event,data)=>{
 function Render_data_app(Data_area_render_info,pos_array){
       
 
-
     /*************************AREA 1 SELECTRO CUADRICULA*****************************************/
     document.getElementById("container_area").innerHTML="";
 
@@ -77,25 +76,24 @@ function Render_data_app(Data_area_render_info,pos_array){
                   </span> 
                   <button id="update_area" class="update_area btnEfect" onclick="Guardar()">Guardar</button>
                   <button id="delet_area" class="delet_area btnEfect" onclick="Borrar_area('${Data_area_render_info[pos_array].id}')">Borrar</button>
-                    <!----------------------------------------->
-                      <div class="gradiente-btn-container">
-                          <button class="gradiente-btn" onclick="showSystemColor('controles-gradiente','Containner_work_area')">Opciones de Degradado</button>
-                          <div class="controles-gradiente" style="display:none;">
-                                  <!--------------------------------------->
-                                        <span>Tipo:</span>
-                                        <select id="gradientType">
-                                            <option value="linear">Lineal</option>
-                                            <option value="radial">Radial</option>
-                                        </select>
-                                        <span id="angleLabel">Ángulo: 0°</span>
-                                        <input type="range" id="gradientAngle" min="0" max="360" value="180">
-                                        <span>Colores:</span>
-                                        <input type="color" id="gradientColor1" value="#003399">
-                                        <input type="color" id="gradientColor2" value="#660066">
-                                  <!----------------------------------------->
-                          </div>
-                      </div>
-                    <!----------------------------------------->
+                   
+                 <div class="gradiente-btn-container">
+                    <button class="gradiente-btn" onclick="showSystemColor('controles-gradiente','Containner_work_area')">Opciones de Degradado</button>
+                    <div class="controles-gradiente" style="display:none;">
+                       <!--------------------------------------->
+                          <span>Tipo:</span>
+                            <select id="gradientType">
+                                <option value="linear">Lineal</option>
+                                <option value="radial">Radial</option>
+                            </select>
+                            <span id="angleLabel">Ángulo: 0°</span>
+                            <input type="range" id="gradientAngle" min="0" max="360" value="180">
+                            <span>Colores:</span>
+                            <input type="color" id="gradientColor1" value="#003399">
+                            <input type="color" id="gradientColor2" value="#660066">
+                          <!---------"linear-gradient(to bottom, #003399 0%, #003397 0%, #660066 100%)",--------------------------------------------->
+                    </div>
+                </div>
             </div> 
             <div class="${Data_area_render_info[pos_array].id}" id="Containner_work_area"> </div>
           </div>`;
@@ -104,19 +102,11 @@ function Render_data_app(Data_area_render_info,pos_array){
     document.getElementById("Containner_work_area").style.backgroundSize = 'cover';
     document.getElementById("Containner_work_area").style.backgroundPosition = 'center';
     document.getElementById("Containner_work_area").style.backgroundRepeat = 'no-repeat';
-    /*---------------------------*/
 
     const container = document.getElementById('Containner_work_area');
-
-    console.log(container.style.background)
-    let TY = extraerColoresDeGradiente(document.getElementById("Containner_work_area").style.background);
-    console.log(TY)
-    
-    /*---------------------------------------*/
-
-    /*-----------------------------------------*/
+  
     if(Data_area_render_info[pos_array].product.length>0){
-      
+          
         Data_area_render_info[pos_array].product.forEach((element,index)=>{
 
                     const newDiv = document.createElement('div');
@@ -185,6 +175,8 @@ function Render_data_app(Data_area_render_info,pos_array){
                     newDiv.appendChild(controlsDiv);
                     container.appendChild(newDiv);
 
+                    //Añadir funcionalidad de redimensionamiento y arrastre
+                    makeResizableAndDraggable(newDiv) 
         })
 
     }
@@ -192,8 +184,6 @@ function Render_data_app(Data_area_render_info,pos_array){
     /*-----------------------------------------------------------------------*/
     /*******Efecto de tamaño par cuador creados por render***********/
     function makeDraggableAndResizable(element) {
-
-
         let isResizing = false;
         let isDragging = false;
         let startX, startY;
@@ -262,307 +252,111 @@ function Render_data_app(Data_area_render_info,pos_array){
         divElement.style.width = `${initialWidth}%`;
         divElement.style.height = `${initialHeight}%`;
     }
-    /*-----------------------------------------------------------------------*/
     /*******Efecto de tamaño par cuador creados por render***********/
 
-const hexColor1 = rgbToHex(TY[0]);
-const hexColor2 = rgbToHex(TY[1]);
+          /******************CREAR GENERADOR DE AREAS****************************/
 
-    document.getElementById("gradientColor1").value = hexColor2;
-    document.getElementById("gradientColor2").value = hexColor1;
-    /*---------------------------------------------------------------------*/
+          container.addEventListener('click', (event) => {
+                  if (event.target.closest('.resizable-div-color')) {
+                      return;
+                  }
 
+                  const newDiv = document.createElement('div');
+                  newDiv.className = 'resizable-div';
+                  newDiv.innerHTML = container.childNodes.length;
+                  newDiv.id = container.childNodes.length;
 
-/******************CREAR GENERADOR DE AREAS****************************/
-  container.addEventListener('click', (event) => {
-      
-      // Evita la creación de un nuevo div si se hace clic en un div redimensionable existente
-      if (event.target.closest('.resizable-div')) {
-          return;
-      }
+                  // Obtener las dimensiones del contenedor para el cálculo de porcentajes
+                  const containerRect = container.getBoundingClientRect();
 
-      const newDiv = document.createElement('div');
-      newDiv.className = 'resizable-div';
-      const uniqueId = `resizable-div-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-            newDiv.id = uniqueId;
-      // Obtener las dimensiones del contenedor para el cálculo de porcentajes
-      const containerRect = container.getBoundingClientRect();
+                  // Calcular la posición y el tamaño inicial en porcentaje
+                  const clickX = event.clientX - containerRect.left;
+                  const clickY = event.clientY - containerRect.top;
+                  const initialWidth = 0.20 * containerRect.width; // 15% del ancho del contenedor
+                  const initialHeight = 0.30 * containerRect.height; // 20% del alto del contenedor
+                  const leftPercentage = (clickX / containerRect.width) * 100;
+                  const topPercentage = (clickY / containerRect.height) * 100;
+                  const widthPercentage = (initialWidth / containerRect.width) * 100;
+                  const heightPercentage = (initialHeight / containerRect.height) * 100;
 
-      // Calcular la posición y el tamaño inicial en porcentaje
-      const clickX = event.clientX - containerRect.left;
-      const clickY = event.clientY - containerRect.top;
-      const initialWidth = 0.25 * containerRect.width; // 15% del ancho del contenedor
-      const initialHeight = 0.35 * containerRect.height; // 20% del alto del contenedor
-      const leftPercentage = (clickX / containerRect.width) * 100;
-      const topPercentage = (clickY / containerRect.height) * 100;
-      const widthPercentage = (initialWidth / containerRect.width) * 100;
-      const heightPercentage = (initialHeight / containerRect.height) * 100;
+                  // Establecer los estilos usando los valores en porcentaje
+                  newDiv.style.left = `${leftPercentage}%`;
+                  newDiv.style.top = `${topPercentage}%`;
+                  newDiv.style.width = `${widthPercentage}%`;
+                  newDiv.style.height = `${heightPercentage}%`;
+                  
+                  // Guardar los valores de porcentaje en el dataset para usarlos en el arrastre y redimensionamiento
+                  newDiv.dataset.left = leftPercentage;
+                  newDiv.dataset.top = topPercentage;
+                  newDiv.dataset.width = widthPercentage;
+                  newDiv.dataset.height = heightPercentage
+                  newDiv.style.background = getRandomColor();
+                  newDiv.style.backgroundSize = 'contain';
+                  newDiv.style.backgroundPosition = 'center';
+                  newDiv.style.backgroundRepeat = 'no-repeat';
+                
 
-      // Establecer los estilos usando los valores en porcentaje
-      newDiv.style.left = `${leftPercentage}%`;
-      newDiv.style.top = `${topPercentage}%`;
-      newDiv.style.width = `${widthPercentage}%`;
-      newDiv.style.height = `${heightPercentage}%`;
+                  // Crear y añadir el "mango" de redimensionamiento
+                  const resizeHandle = document.createElement('div');
+                  resizeHandle.className = 'resize-handle';
+                  newDiv.appendChild(resizeHandle);
+                  
+                  const controlsDiv = document.createElement('div');
+                  controlsDiv.className = 'controls';
 
-      // Guardar los valores de porcentaje en el dataset para usarlos en el arrastre y redimensionamiento
-      newDiv.dataset.left = leftPercentage;
-      newDiv.dataset.top = topPercentage;
-      newDiv.dataset.width = widthPercentage;
-      newDiv.dataset.height = heightPercentage;
+                  const imageButton = document.createElement('button');
+                  imageButton.textContent = '🖼️';
+                  imageButton.className = 'image-btn';
+                  imageButton.addEventListener('click', (e) => {
+                          e.stopPropagation();
+                          Pos_Select_id=newDiv.id;
+                          console.log("creado por click")
+                          api.send("Select-Imagen-product");
+                      });
 
-      let ColorAleatorio = getRandomColor();
+                  const colorButton = document.createElement('button');
+                  colorButton.textContent = '🎨';
+                  colorButton.className = 'color-btn';
+                  colorButton.addEventListener('click', (e) => {
+                      e.stopPropagation();
+                      const colorPicker = document.createElement('input');
+                      colorPicker.type = 'color';
+                      colorPicker.addEventListener('input', (event) => {
+                          newDiv.style.backgroundColor = event.target.value;
+                      });
+                      colorPicker.click();
+                  });
 
-      // Asignar un color aleatorio inicial
-      newDiv.style.background = ColorAleatorio
-      newDiv.style.backgroundSize = 'contain';
-      newDiv.style.backgroundPosition = 'center';
-      newDiv.style.backgroundRepeat = 'no-repeat';
+                  const deleteButton = document.createElement('button');
+                  deleteButton.textContent = '❌';
+                  deleteButton.className = 'delete-btn';
+                  deleteButton.addEventListener('click', (e) => {
+                      e.stopPropagation();
+                      newDiv.remove();
+                  });
 
-      // Crear y añadir el "mango" de redimensionamiento
-      const resizeHandle = document.createElement('div');
-      resizeHandle.className = 'resize-handle';
-      newDiv.appendChild(resizeHandle);
-
-        //Contenedor de controles
-        const controlsDiv = document.createElement('div');
-        controlsDiv.className = 'controls';
-
-
-        const colorControls = document.createElement('div');
-        colorControls.className = 'Hide_Color_select';
-        colorControls.id = `containner_color_select-${uniqueId}`;
-        colorControls.innerHTML = `
-          <div class="slider-group">
-            <label for="hueRange-${uniqueId}">Matiz (Hue): <span id="hueLabel-${uniqueId}">${hexToHSL(ColorAleatorio).h}</span></label>
-            <input type="range" id="hueRange-${uniqueId}" min="0" max="360" value="${hexToHSL(ColorAleatorio).h}" oninput="updateColor('${uniqueId}')">
-          </div>
-          <div class="slider-group">
-            <label for="alphaRange-${uniqueId}">Alpha: <span id="alphaLabel-${uniqueId}">1</span></label>
-            <input type="range" id="alphaRange-${uniqueId}" min="0" max="1" step="0.01" value="1" oninput="updateAlpha('${uniqueId}')">
-          </div>
-          <div class="color-plane" id="colorPlane-${uniqueId}" onclick="ColorPanel(event,'${uniqueId}')" style="background:linear-gradient(to right, white, transparent), linear-gradient(to top, black, transparent), hsl(${hexToHSL(ColorAleatorio).h}, 100%, 50%)"></div>`;
-
-          controlsDiv.appendChild(colorControls);
-
-      // Botón de Borrar
-      const deleteButton = document.createElement('button');
-      deleteButton.textContent = '❌'; // Usa un emoji para un mejor diseño
-      deleteButton.className = 'delete-btn';
-      deleteButton.addEventListener('click', (e) => {
-          e.stopPropagation(); // Evita que el clic en el botón active el evento del contenedor principal
-          newDiv.remove();
-      });
-
-      // Botón para seleccionar imagen
-      const imageButton = document.createElement('button');
-      imageButton.textContent = '🖼️';
-      imageButton.className = 'image-btn';
-      imageButton.addEventListener('click', (e) => {
-          e.stopPropagation();
-         
-          window.Pos_Select_id = newDiv.id; // Ejemplo de cómo usar una variable global
-          console.log("Elemento seleccionado para imagen:", newDiv.id);
-          api.send("Select-Imagen-product");
-      });
-
-      // Botón para cambiar el color (toggle de los controles de color)
-        const colorButton = document.createElement('button');
-        colorButton.textContent = '🎨';
-        colorButton.className = 'color-btn';
-        colorButton.onclick = (e) => {
-          e.stopPropagation();
-          const controlsContainer = document.getElementById(`containner_color_select-${uniqueId}`);
-          if (controlsContainer) {
-            controlsContainer.classList.toggle("Show_Color_select");
-            controlsContainer.classList.toggle("Hide_Color_select");
-          }
-        };
-
-      // Añadir botones a controlsDiv
-      controlsDiv.appendChild(imageButton);
-      controlsDiv.appendChild(colorButton); // Botón para mostrar/ocultar controles de color
-      controlsDiv.appendChild(deleteButton);
-      newDiv.appendChild(controlsDiv);
-
-      container.appendChild(newDiv);
-
-      // Asumiendo que makeResizableAndDraggable está definida en tu script
-      makeResizableAndDraggable(newDiv);
-  });
-/******************CREAR GENERADOR DE AREAS****************************/
+                  controlsDiv.appendChild(imageButton);
+                  controlsDiv.appendChild(colorButton);
+                  controlsDiv.appendChild(deleteButton);
+                  newDiv.appendChild(controlsDiv);
+                  container.appendChild(newDiv);
+                  makeResizableAndDraggable(newDiv);
+          });
+          /******************CREAR GENERADOR DE AREAS****************************/
 
 
 }
 
-let saturation = 100;
-let lightness = 50;
-let alpha = 1;
-let hue = 0;
-
-function updateColor(divId) {
-  const targetDiv = document.getElementById(divId);
-  const hueRange = document.getElementById(`hueRange-${divId}`);
-  const alphaRange = document.getElementById(`alphaRange-${divId}`);
-  const hueLabel = document.getElementById(`hueLabel-${divId}`);
-  const alphaLabel = document.getElementById(`alphaLabel-${divId}`);
-  const colorPlane = document.getElementById(`colorPlane-${divId}`);
-        
-  if (targetDiv && hueRange && alphaRange && hueLabel && alphaLabel){
-          
-          //const hue = parseInt(hueRange.value);
-          hue = parseInt(hueRange.value);
-
-          //targetDiv.style.backgroundColor = `hsl(${hue}, 100%, 50%)`;
-          //targetDiv.style.opacity = alpha;
-          hueLabel.textContent = hue;
-         
-          colorPlane.style.background = `
-                  linear-gradient(to right, white, transparent),
-                  linear-gradient(to top, black, transparent),
-                  hsl(${hue}, 100%, 50%)
-                `;
-
-          UpdateColorDiv(divId);      
-  }
-}
 
 
-function updateAlpha(divId) {
-  const targetDiv = document.getElementById(divId);
-  const alphaRange = document.getElementById(`alphaRange-${divId}`);
-  const alphaLabel = document.getElementById(`alphaLabel-${divId}`);
-
-  if(targetDiv && alphaRange && alphaLabel){
-    
-      alpha = parseFloat(alphaRange.value);
-      alphaLabel.textContent = alpha.toFixed(2);
-      /*
-      const alpha = parseFloat(alphaRange.value);
-      targetDiv.style.opacity = alpha;
-      alphaLabel.textContent = alpha.toFixed(2);
-      */
-      UpdateColorDiv(divId);
-  }
-}
-
-function ColorPanel(event,divId){
-      const colorPlane = document.getElementById(`colorPlane-${divId}`);
-      const rect = colorPlane.getBoundingClientRect();
-      const x = event.clientX - rect.left;
-      const y = event.clientY - rect.top;
-      const width = rect.width;
-      const height = rect.height;
-
-      saturation = Math.round((x / width) * 100);
-      lightness = 100 - Math.round((y / height) * 100);
-      value = 100 - Math.round((y / height) * 100); // para HSV
-
-      UpdateColorDiv(divId)
-}
-
-function UpdateColorDiv(divId){
-
-  const targetDiv = document.getElementById(divId);
-  targetDiv.style.background = `hsla(${hue}, ${saturation}%, ${lightness}%, ${alpha})`;
-
-}
-function hexToHSL(hex) {
-          // Remove '#' if it exists
-          hex = hex.replace(/^#/, '');
-
-          // Parse HEX to RGB
-          const r = parseInt(hex.substring(0, 2), 16);
-          const g = parseInt(hex.substring(2, 4), 16);
-          const b = parseInt(hex.substring(4, 6), 16);
-
-          // Normalize RGB values to the range [0, 1]
-          const rNormalized = r / 255;
-          const gNormalized = g / 255;
-          const bNormalized = b / 255;
-
-          // Find the maximum and minimum RGB values
-          const max = Math.max(rNormalized, gNormalized, bNormalized);
-          const min = Math.min(rNormalized, gNormalized, bNormalized);
-
-          let h, s, l = (max + min) / 2;
-
-          if (max === min) {
-            // Achromatic (gray)
-            h = 0;
-            s = 0;
-          } else {
-            const d = max - min;
-            s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-
-            switch (max) {
-              case rNormalized:
-                h = (gNormalized - bNormalized) / d + (gNormalized < bNormalized ? 6 : 0);
-                break;
-              case gNormalized:
-                h = (bNormalized - rNormalized) / d + 2;
-                break;
-              case bNormalized:
-                h = (rNormalized - gNormalized) / d + 4;
-                break;
-            }
-
-            h /= 6;
-          }
-
-          // Convert HSL values to the desired ranges
-          h = Math.round(h * 360); // Hue: 0-360
-          s = Math.round(s * 100); // Saturation: 0-100%
-          l = Math.round(l * 100); // Lightness: 0-100%
-
-          return { h, s, l };
-}
-
-function extraerColoresDeGradiente(style){
- 
-  const estilo = style;
-
-  // Expresión regular para capturar todos los colores rgb o rgba
-  const regex = /rgba?\((\d{1,3}),\s*(\d{1,3}),\s*(\d{1,3})(?:,\s*[\d.]+)?\)/g;
-
-  const colores = [];
-  let match;
-  while ((match = regex.exec(estilo)) !== null) {
-    colores.push(match[0]); // match[0] contiene el string completo: rgb(...) o rgba(...)
-  }
-
-  return colores;
-}
-
-function rgbToHex(rgbString) {
-  // 1. Extraer los valores R, G, B
-  const match = rgbString.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
-
-  if (!match) {
-    return null; // Retorna null si el formato no es el esperado
-  }
-
-  const r = parseInt(match[1], 10);
-  const g = parseInt(match[2], 10);
-  const b = parseInt(match[3], 10);
-
-  // 2. Convertir cada valor a hexadecimal
-  const toHex = (c) => {
-    const hex = c.toString(16);
-    return hex.length === 1 ? "0" + hex : hex;
-  };
-
-  const hexR = toHex(r);
-  const hexG = toHex(g);
-  const hexB = toHex(b);
-
-  // 3. Concatenar los valores hexadecimales
-  return `#${hexR}${hexG}${hexB}`;
-}
 
 
-/*-------------------------------------------------------------*/
 /************COLOR GRADIENT CONTAINNER**********************/
+function ContainnerSelectroColor(classElement){
 
+  document.getElementsByClassName(classElement)[0];
+
+}
 
 function showSystemColor(element,containner){
 
@@ -583,7 +377,9 @@ function showSystemColor(element,containner){
     /*------------------------------------------------------*/
     let color1=gradienteColor1.value; 
     let color2=gradienteColor2.value;
-    let angle=gradienteAngle.value+"deg";
+    let angle;
+    //angle=gradienteAngle.value+"deg";
+
     /*-------------------------------------------------------------*/
     if (gradienteType.value === 'linear') {
 
@@ -601,6 +397,7 @@ function showSystemColor(element,containner){
     /*-------------------------------------------------------------*/
 
     gradienteType.addEventListener('change', function(){
+
 
         if (gradienteType.value === 'linear') {
            
@@ -622,6 +419,8 @@ function showSystemColor(element,containner){
             /*---------------------------------------------*/
             document.getElementById(containner).style.background ='';
             document.getElementById(containner).style.background =`radial-gradient(circle, ${color1}, ${color2})`;
+
+
         }
 
     });
@@ -644,14 +443,14 @@ function showSystemColor(element,containner){
       if (gradienteType.value === 'linear') {
 
 
-        color1=gradienteColor1.value;
-        console.log(angle, color1, color2)
+        color1=gradienteColor1.value
         document.getElementById(containner).style.background ='';
         document.getElementById(containner).style.background =`linear-gradient(${angle}, ${color1}, ${color2})`;
       
       } 
 
       if (gradienteType.value === 'radial') {
+
 
         color1=gradienteColor1.value
         document.getElementById(containner).style.background ='';
@@ -667,7 +466,7 @@ function showSystemColor(element,containner){
           color2=gradienteColor2.value;
           document.getElementById(containner).style.background ='';
           document.getElementById(containner).style.background =`linear-gradient(${angle}, ${color1}, ${color2})`;
-        console.log(angle, color1, color2)
+        
       } 
 
       if(gradienteType.value === 'radial') {
@@ -681,15 +480,51 @@ function showSystemColor(element,containner){
 
 }
 
+function actualizarGradienteContenedor(containner,gradienteType,gradienteAngle,gradienteColor1,gradienteColor2,gradienteColor3) {
+
+        const tipo = gradienteType;
+        const colores = [gradienteColor1, gradienteColor2, gradienteColor3].filter(c => c);
+        
+        let direccion = '';
+        if (tipo === 'linear') {
+           
+            const angulo = gradienteAngle;
+            direccion = `${angulo}deg`;
+            gradienteAngle.style.display = 'block';
+            angleLabel.style.display = 'block';
+            angleLabel.textContent = `Ángulo: ${angulo}°`;
+        } 
+        else if (tipo === 'radial') {
+            direccion = 'circle';
+            gradienteAngle.style.display = 'none';
+            angleLabel.style.display = 'none';
+        }
+
+       //aplicarGradiente(containner, tipo, direccion, colores);
+}
 
 
+function aplicarGradiente(elemento, tipo, direccion, colores) {
+    if (!elemento) {
+        console.error("El elemento HTML proporcionado no existe.");
+        return;
+    }
+    const listaColores = colores.join(', ');
+    let gradienteCSS = '';
+    if (tipo === 'linear') {
+        gradienteCSS = `linear-gradient(${direccion}, ${listaColores})`;
+    } else if (tipo === 'radial') {
+        gradienteCSS = `radial-gradient(${direccion}, ${listaColores})`;
+    } else {
+        console.error("Tipo de gradiente no válido. Usa 'linear' o 'radial'.");
+        return;
+    }
+    elemento.style.background = gradienteCSS;
+    //elemento.style.background = 'transparent';
+}
 /************COLOR GRADIENT CONTAINNER**********************/
 /*--------------------------------------------------------*/
 function makeResizableAndDraggable(element){
-
- // console.log("Element Resie",element.childNodes[1])
-
-    //console.log("Element Resie",element.childNodes[1].children[0].className)
 
         let isResizing = false;
         let isDragging = false;
@@ -697,8 +532,7 @@ function makeResizableAndDraggable(element){
         let startWidth, startHeight, startLeft, startTop;
 
         element.addEventListener('mousedown', (e) => {
-          if(element.childNodes[1].children[0].className=="Hide_Color_select"){
-
+          
                 if (e.target.tagName === 'BUTTON') {
                     return;
                 }
@@ -725,61 +559,56 @@ function makeResizableAndDraggable(element){
                     startTop = parseFloat(element.dataset.top);
                     e.stopPropagation();
                 }
-            }
         });
 
         document.addEventListener('mousemove', (e) => {
-            if(element.childNodes[1].children[0].className=="Hide_Color_select"){
 
-                if (isResizing) {
+            if (isResizing) {
 
-                    const containerRect = element.parentElement.getBoundingClientRect();
-                    const newWidthPercentage = Math.max(1, startWidth + ((e.clientX - startX) / containerRect.width) * 100);
-                    const newHeightPercentage = Math.max(1, startHeight + ((e.clientY - startY) / containerRect.height) * 100);
+                const containerRect = element.parentElement.getBoundingClientRect();
+                const newWidthPercentage = Math.max(1, startWidth + ((e.clientX - startX) / containerRect.width) * 100);
+                const newHeightPercentage = Math.max(1, startHeight + ((e.clientY - startY) / containerRect.height) * 100);
 
-                    element.style.width = `${newWidthPercentage}%`;
-                    element.style.height = `${newHeightPercentage}%`;
-                    element.dataset.width = newWidthPercentage;
-                    element.dataset.height = newHeightPercentage;
-                } 
-                else 
-                  if (isDragging) {
+                element.style.width = `${newWidthPercentage}%`;
+                element.style.height = `${newHeightPercentage}%`;
+                element.dataset.width = newWidthPercentage;
+                element.dataset.height = newHeightPercentage;
+            } 
+            else 
+              if (isDragging) {
 
-                    const containerRect = element.parentElement.getBoundingClientRect();
-                    const newLeftPercentage = startLeft + ((e.clientX - startX) / containerRect.width) * 100;
-                    const newTopPercentage = startTop + ((e.clientY - startY) / containerRect.height) * 100;
+                const containerRect = element.parentElement.getBoundingClientRect();
+                const newLeftPercentage = startLeft + ((e.clientX - startX) / containerRect.width) * 100;
+                const newTopPercentage = startTop + ((e.clientY - startY) / containerRect.height) * 100;
 
-                    element.style.left = `${newLeftPercentage}%`;
-                    element.style.top = `${newTopPercentage}%`;
-                    element.dataset.left = newLeftPercentage;
-                    element.dataset.top = newTopPercentage;
-                }
+                element.style.left = `${newLeftPercentage}%`;
+                element.style.top = `${newTopPercentage}%`;
+                element.dataset.left = newLeftPercentage;
+                element.dataset.top = newTopPercentage;
             }
         });
 
 
         /*desactiva las funciones*/
         document.addEventListener('mouseup', () => {
-            if(element.childNodes[1].children[0].className=="Hide_Color_select"){
-                isResizing = false;
-                isDragging = false;
-            }
+            isResizing = false;
+            isDragging = false;
         });
       
         /*-----------------------------------------*/
         window.addEventListener('keydown', (event) => {
-            if(element.childNodes[1].children[0].className=="Hide_Color_select"){
+            if (event.code === 'Space') {
+          
+              console.log('Estado de animación alternado.');
+            isResizing = false;
+            isDragging = false;
 
-              if (event.code === 'Space') {  
-                  console.log('Estado de animación alternado.');
-                  isResizing = false;
-                  isDragging = false;
-              }
             }
         });
 }
 /*--------------------------------------------------------*/
 /*-------------------COLOR RANDOM PARA CUADORS-------------------*/
+
 function getRandomColor(){
 
     const letters = '0123456789ABCDEF';
@@ -794,58 +623,6 @@ function getRandomColor(){
 
     return color;
 }
-
-
-function hexToHSL(hex) {
-  // Remove '#' if it exists
-  hex = hex.replace(/^#/, '');
-
-  // Parse HEX to RGB
-  const r = parseInt(hex.substring(0, 2), 16);
-  const g = parseInt(hex.substring(2, 4), 16);
-  const b = parseInt(hex.substring(4, 6), 16);
-
-  // Normalize RGB values to the range [0, 1]
-  const rNormalized = r / 255;
-  const gNormalized = g / 255;
-  const bNormalized = b / 255;
-
-  // Find the maximum and minimum RGB values
-  const max = Math.max(rNormalized, gNormalized, bNormalized);
-  const min = Math.min(rNormalized, gNormalized, bNormalized);
-
-  let h, s, l = (max + min) / 2;
-
-  if (max === min) {
-    // Achromatic (gray)
-    h = 0;
-    s = 0;
-  } else {
-    const d = max - min;
-    s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-
-    switch (max) {
-      case rNormalized:
-        h = (gNormalized - bNormalized) / d + (gNormalized < bNormalized ? 6 : 0);
-        break;
-      case gNormalized:
-        h = (bNormalized - rNormalized) / d + 2;
-        break;
-      case bNormalized:
-        h = (rNormalized - gNormalized) / d + 4;
-        break;
-    }
-
-    h /= 6;
-  }
-
-  // Convert HSL values to the desired ranges
-  h = Math.round(h * 360); // Hue: 0-360
-  s = Math.round(s * 100); // Saturation: 0-100%
-  l = Math.round(l * 100); // Lightness: 0-100%
-
-  return { h, s, l };
-}
 /*---------------------COLOR RANDOM PARA CUADORS-----------------------*/
 /**********************************************************************/
 function Render_data_select(data,pos_array){
@@ -856,14 +633,13 @@ function Render_data_select(data,pos_array){
 
       data.forEach((element,index)=>{
 
-          if(index!=(pos_array)){
+        if(index!=(pos_array)){
 
-              document.getElementById("SectionControl_Select_Section").innerHTML+=`<option value="${element.id}">${element.name_area}</option>`;
-       
-          }
+            document.getElementById("SectionControl_Select_Section").innerHTML+=`<option value="${element.id}">${element.name_area}</option>`;
+     
+        }
 
-      })
-
+      }) 
 }
 
 function Selectror_de_areas(){

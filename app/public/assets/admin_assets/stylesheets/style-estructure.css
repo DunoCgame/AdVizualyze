@@ -10,7 +10,7 @@
     grid-column-gap: 0px;
     grid-row-gap: 0px;
     grid-auto-flow: row;
-    /* background: #cddc39; */
+    
 }
 
 .Containner-area{ grid-area: 1 / 1 / 2 / 2; }
@@ -20,14 +20,11 @@
 
 .Containner-area {
     background: rgb(20 13 80 / 36%);
-    /* padding: 5px; */
-    /* overflow-y: scroll; */
     height: 76.5vh;
 }
 
 .Containner-Área-de-imágenes {
-    background: white;
-    /* padding: 6px; */
+    /*background: white;*/
 }
 
 .Containner-Área-de-imágenes-btn {
@@ -36,8 +33,8 @@
     margin-bottom: 1px;
     align-items: center;
     flex-direction: row;
+    background: white;
 }
-
 .Containner-Área-de-imágenes-btn>button {
     font-weight: bold;
     background: #0580ff;
@@ -69,81 +66,98 @@
 }
 
 /*----------------------stylos de control de areas-----------------------------------*/
-.Containner-work-area {
+
+#Containner_work_area {
     width: 100%;
-    height: 68vh;
+    height: 70vh;
     z-index: 0;
     position: relative;
-    background: #131321;
 }
-
-.Containner-square {
-
-    display: grid;
-    gap: 0px;
-    grid-auto-flow: row dense;
-    position: absolute;
-    background: grey;
+/*
+#Containner_work_area {
     width: 100%;
-    height: 100%;   
-}
-
-.item-square {
-    width: 99%;
-    /*background: #0597ff0f;*/
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: move;
+    height: 70vh;
+    z-index: 0;
     position: relative;
-    z-index: 1000;
-    border: 0.6px solid #ffffff69;
-}
-.Containner-imagenes {
-    width:100%;
-    height:100%;
-    position:absolute;
-    display:grid;
-    gap: 0px;
-    grid-auto-flow: row dense;
-    background-color: rgba(20, 13, 80, 0.36);
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: cover;
-   
-}
+    overflow: scroll;
+}*/
 
-.img-article {
-    width: 100%;
+  
+  .resizable-div {
+
+    border: 1px solid #2980b9;
+    position: absolute;
+    cursor: move;
     display: flex;
+    flex-direction: column;
     justify-content: center;
+    padding: 5px;
+    box-sizing: border-box;
     align-items: center;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: contain;
-}
-
-.item-void{
-
-  display: flex;
-  justify-content: center;
-  align-items: center;
-    
-}
-.containner-btn{
-
- position: absolute;
- z-index:10000;
 
 }
-.containner-btn>button {
-    color: white;
-    background: #0b539e47;
-    padding:10px;
-    border-radius: 10px;
+        .resizable-div:hover {
+            outline: 1px solid #fff;
+            box-shadow: 0 0 1px rgba(0,0,0,0.5);
+        }
+.resizable-div .controls {
+    display: flex;
+    gap: 5px;
+    margin-bottom: 5px;
+    background: rgb(53 53 53 / 43%);
+    padding: 6px;
 }
+        .resizable-div button {
+            padding: 5px 10px;
+            font-size: 0.8em;
+            cursor: pointer;
+            border: none;
+            border-radius: 3px;
+            background-color: #f0f0f0;
+            color: #333;
+        }
+        .resizable-div button.delete-btn {
+            background-color: #e74c3c;
+            color: white;
+        }
+        .resizable-div button.image-btn {
+            background-color: #2ecc71;
+            color: white;
+        }
+        .resizable-div img {
+            max-width: 100%;
+            max-height: calc(100% - 30px); /* Ajusta para dejar espacio a los botones */
+            object-fit: contain; /* Para que la imagen se ajuste sin distorsionarse */
+            display: block; /* Eliminar espacio extra debajo de la imagen */
+        }
 
+.Show_Color_select{
 
+    display:block;
+    background: white;
+    position: absolute;
+    z-index: 99999;
+    left: 145px;
+    top: 68px;
+    padding: 5px;
+    width: 200px;
+    height: 250px;
+}
+.Hide_Color_select{
+ 
+    display:none;
+
+}
+#containner_color_select {
+    background: white;
+    position: absolute;
+    z-index: 99999;
+    left: 145px;
+    top: 68px;
+    padding: 5px;
+    width: 200px;
+    height: 250px;
+}
 /*----------------------stylos de control de areas-----------------------------------*/
 /*----------------------ENCABESADO DE GESTOR DE IMAGENES-----------------------------------*/
 /*-----------------------------SELECTOR Y CONTROL DE IMAGENES-------------------------------------*/
@@ -165,6 +179,8 @@
     width: 10%;
     font-weight: 800;
     font-size: 27px;
+    background: orange;
+    color: white;
 }
 
 #containner-servidor {
@@ -259,4 +275,108 @@ input[type=number]::-webkit-outer-spin-button {
 
 .NameAreacontainner {
     font-size: 19px;
+}
+
+/*--------------------------------------------------------------*/
+
+.btnEfect:active {
+  /* Efecto al hacer clic */
+  background-color: #45a049; /* Verde un poco más oscuro */
+  transform: translateY(2px); /* Mueve el botón ligeramente hacia abajo */
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.2); /* Sombra sutil para simular hundimiento */
+}
+/*---------------------------------------------------------------------------------------*/
+.gradiente-btn-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    background: red;
+}
+.gradiente-btn {
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    background-color: #0580ff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    transition: background-color 0.2s;
+}
+
+        .gradiente-btn:hover {
+            background-color: #218838;
+        }
+        
+.controles-gradiente {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+    background: rgb(255 255 255);
+    padding: 10px;
+    border-radius: 8px;
+    z-index: 99999;
+    position: absolute;
+    top: 47px;
+}
+        
+        .controles-gradiente select, .controles-gradiente input[type="range"] {
+            width: 150px;
+        }
+        
+        /* Estilos para el input range */
+input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 8px;
+    background: #134f80;
+    border-radius: 5px;
+    outline: none;
+    cursor: pointer;
+}
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: #007bff;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            background: #007bff;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+
+         .resize-handle {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 15px;
+            height: 15px;
+            background-color: #ffc107;
+            cursor: se-resize;
+        }
+
+/*------------------Time-----------------------*/
+
+#containnerContador {
+    background: #0c10174f;
+    position: absolute;
+    padding: 4px;
+    left: 39%;
+    top: 22px;
+    z-index: 99999;
+}
+#Contador {
+    color: #ffffff;
+    font-size: 27px;
 }
