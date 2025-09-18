@@ -1,6 +1,6 @@
 {
   "name": "AdVizualyze",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "aplicacion para el publisidad en smart tv",
   "main": "app/main.js",
   "scripts": {
@@ -35,6 +35,7 @@
     "electron-builder": "^24.4.0"
   },
   "dependencies": {
+    "crypto-js": "^4.1.1",
     "express": "^4.18.2",
     "socket.io": "^4.0.2",
     "socket.io-client": "^4.6.1",

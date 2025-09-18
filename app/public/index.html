@@ -27,9 +27,9 @@
     box-sizing: border-box;
     align-items: center;
     /*--------------------------------*/
-    background-position: center;
-    background-size: contain;
-    background-repeat: no-repeat;
+    background-position:center;
+    background-size:cover;
+    background-repeat:no-repeat;
 }
 
 /**************/
@@ -113,7 +113,7 @@ function nextSlide(){
 
 if(document.getElementById("contenedor").childNodes.length>0){
 
-        setInterval(nextSlide,2000);
+        setInterval(nextSlide,20000);
 
 }
 
@@ -145,7 +145,7 @@ function Render_data(data){
             area.style.width = product.width; // Tamaño inicial un poco más grande
             area.style.height = product.height;
             area.style.background = product.background;
-            area.style.backgroundSize = 'contain';
+            area.style.backgroundSize = 'cover';
             area.style.backgroundPosition = 'center';
             area.style.backgroundRepeat = 'no-repeat';
 

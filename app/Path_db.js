@@ -10,7 +10,7 @@ let URL = {
 	"upload":path.join(__dirname,'../data_app/upload')
 }
 **/
-/********PARA USO COMPILADO ***/
+/********PARA USO COMPILADO *****/
 
 let URL = {
 	"KeyRegistre":path.join(__dirname,'../../data_app/.Key_Registre.json'),

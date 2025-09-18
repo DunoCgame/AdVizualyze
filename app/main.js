@@ -63,7 +63,7 @@ function createWindow(){
 
     mainWindow.loadFile(path.join(__dirname,'public/admin.html'));
 
-    //mainWindow.webContents.openDevTools() 
+   // mainWindow.webContents.openDevTools() 
     
     Server_System()
 
@@ -85,7 +85,7 @@ fs.watch(PathDB.data_square, (eventType, filename) => {
 
 /*----------------------------Reload of Data for change--------------------------------*/
 
-/*---------------------Enviar Informacioon de Render Dat-----------------*/
+/*---------------------Enviar Informacioon de Render Datos-----------------*/
 ipcMain.on('Data-System',(event,data) => {
 
     const Ip_addres = Object.values(os.networkInterfaces());
@@ -108,6 +108,8 @@ ipcMain.on('Data-System',(event,data) => {
         if (err) {
             return console.error('Error al leer la carpeta:', err);
         }
+        else{
+
         archivos.forEach(archivo => {
             const rutaArchivo = path.join(rutaCarpeta, archivo);
             fs.stat(rutaArchivo, (err, stats) => {
@@ -119,16 +121,23 @@ ipcMain.on('Data-System',(event,data) => {
                 }
             });
         });
-
-        // Esperar un momento para asegurarse de que todos los archivos se hayan procesado
+                // Esperar un momento para asegurarse de que todos los archivos se hayan procesado
         setTimeout(() => {
-            //console.log('Archivos encontrados:', archivosArray);
+          
             mainWindow.send("Select-music-send", archivosArray);
-            // Aquí puedes enviar el array a donde necesites
-        }, 1000); // Ajusta el tiempo según sea necesario
+
+        }, 1000); 
+
+       }
     });
 })
 
+
+ipcMain.on('app_version', (event) => {
+  
+    mainWindow.send('app_version', { name:app.getName(), version: app.getVersion() });
+
+});
 /*---------------------Enviar Informacioon de Render Data-------------------*/
 /*---------------------------Search data------------------------------------*/
 ipcMain.on("Search-area-select",(event, id) => {

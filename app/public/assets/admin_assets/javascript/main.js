@@ -1,10 +1,24 @@
-let Pos_Select_id;
+let Pos_Select_id_square;
+let Pos_Select_id_area;
 let Estado_action;
 let pos_array=0;
 
 console.clear();
 
 api.send('Data-System') /**solicita la informacion al cargar la aplicacion**/
+api.send('app_version');
+
+
+   const version = document.getElementById('version');
+
+
+        api.receive('app_version', (event, arg) => {
+
+                version.title = arg.name +" "+ arg.version;
+                version.innerHTML = arg.name +" "+ arg.version;
+
+        });
+
 
 api.receive("Send-data-server",(event,server)=>{
 
@@ -65,8 +79,6 @@ api.receive("Render-Data-reload-change",(event,data)=>{
 
 function Render_data_app(Data_area_render_info,pos_array){
       
-
-
     /*************************AREA 1 SELECTRO CUADRICULA*****************************************/
     document.getElementById("container_area").innerHTML="";
 
@@ -75,11 +87,11 @@ function Render_data_app(Data_area_render_info,pos_array){
                   <button id="btn_add_image_section" class="icon-image  btnEfect" onclick="Open_Image_Select_area()" >Agregar Imagen</button> 
                   <span class="NameAreacontainner">Nombre del Area: <input type="text" id="SectionControl_TitleArea" class="nombre-area" value='${Data_area_render_info[pos_array].name_area}'>
                   </span> 
-                  <button id="update_area" class="update_area btnEfect" onclick="Guardar()">Guardar</button>
+                  <button id="update_area" class="update_area btnEfect" onclick="Guardar('${Data_area_render_info[pos_array].id}')">Guardar</button>
                   <button id="delet_area" class="delet_area btnEfect" onclick="Borrar_area('${Data_area_render_info[pos_array].id}')">Borrar</button>
                     <!----------------------------------------->
                       <div class="gradiente-btn-container">
-                          <button class="gradiente-btn" onclick="showSystemColor('controles-gradiente','Containner_work_area')">Opciones de Degradado</button>
+                          <button class="gradiente-btn" onclick="showSystemColor('controles-gradiente','${Data_area_render_info[pos_array].id}')">Opciones de Degradado</button>
                           <div class="controles-gradiente" style="display:none;">
                                   <!--------------------------------------->
                                         <span>Tipo:</span>
@@ -97,38 +109,58 @@ function Render_data_app(Data_area_render_info,pos_array){
                       </div>
                     <!----------------------------------------->
             </div> 
-            <div class="${Data_area_render_info[pos_array].id}" id="Containner_work_area"> </div>
+            <div class="Containner-work-area" id="${Data_area_render_info[pos_array].id}"> </div>
           </div>`;
+    let IDContainner = document.getElementById(`${Data_area_render_info[pos_array].id}`);
+  
+  //  console.log(IDContainner)
 
-    document.getElementById("Containner_work_area").style.background = Data_area_render_info[pos_array].background;
-    document.getElementById("Containner_work_area").style.backgroundSize = 'cover';
-    document.getElementById("Containner_work_area").style.backgroundPosition = 'center';
-    document.getElementById("Containner_work_area").style.backgroundRepeat = 'no-repeat';
-    /*---------------------------*/
+        IDContainner.style.background = Data_area_render_info[pos_array].background;
+        IDContainner.style.backgroundSize = 'cover';
+        IDContainner.style.backgroundPosition = 'center';
+        IDContainner.style.backgroundRepeat = 'no-repeat';
 
-    const container = document.getElementById('Containner_work_area');
+        //console.log(IDContainner.style.background)
+    /*----------------------------------------------------------------------*/
+if (tieneImagenDeFondo(IDContainner)) {
+  
+ // console.log('El elemento tiene una imagen de fondo.');
 
-    console.log(container.style.background)
-    let TY = extraerColoresDeGradiente(document.getElementById("Containner_work_area").style.background);
-    console.log(TY)
-    
-    /*---------------------------------------*/
+} else {
+  
+  //console.log('El elemento NO tiene una imagen de fondo.');
+
+    let ColorExtraido = extraerColoresDeGradiente(IDContainner.style.background);
+  
+    const hexColor1 = rgbToHex(ColorExtraido[0]);
+    const hexColor2 = rgbToHex(ColorExtraido[1]);
+
+    document.getElementById("gradientColor1").value = hexColor2;
+    document.getElementById("gradientColor2").value = hexColor1;
+
+
+
+}
+
+
+    /*---------------------------------------------------------------------*/
 
     /*-----------------------------------------*/
     if(Data_area_render_info[pos_array].product.length>0){
       
         Data_area_render_info[pos_array].product.forEach((element,index)=>{
-
+         
                     const newDiv = document.createElement('div');
                     newDiv.className = 'resizable-div';
-                    newDiv.innerHTML = container.childNodes.length;
-                    newDiv.id = index;
+                    newDiv.innerHTML = IDContainner.childNodes.length;
+                    /*newDiv.id = index;*/
+                    newDiv.id = element.id;
                     newDiv.style.left = element.left;
                     newDiv.style.top = element.top;
                     newDiv.style.width = element.width; // Tamaño inicial un poco más grande
                     newDiv.style.height = element.height;
                     newDiv.style.background = element.background;
-                    newDiv.style.backgroundSize = 'contain';
+                    newDiv.style.backgroundSize = 'cover';
                     newDiv.style.backgroundPosition = 'center';
                     newDiv.style.backgroundRepeat = 'no-repeat';
                     newDiv.addEventListener('click', (e) => {
@@ -148,19 +180,22 @@ function Render_data_app(Data_area_render_info,pos_array){
 
                     const deleteButton = document.createElement('button');
                     deleteButton.textContent = '❌'; // Usa un emoji para un mejor diseño
-                    deleteButton.className = 'delete-btn';
+                    deleteButton.className = 'delete-btn ';
                     deleteButton.addEventListener('click', (e) => {
                         e.stopPropagation(); // Evita que el click en el botón afecte al padre
                         newDiv.remove();
                     });
 
                     const imageButton = document.createElement('button');
-                    imageButton.textContent = '🖼️';
-                    imageButton.className = 'image-btn';
+                   /* imageButton.textContent = '🖼️';*/
+                    imageButton.className = 'image-btn icon-images';
                     imageButton.addEventListener('click', (e) => {
                         e.stopPropagation(); // Evita que el click en el botón afecte al padre
-                        Pos_Select_id=newDiv.id;
-                        console.log("creado por render")
+                       
+                        Pos_Select_id_square = newDiv.id;
+                       
+                        console.log("creado por render ",Pos_Select_id_square)
+                       
                         api.send("Select-Imagen-product");
 
                     });
@@ -183,7 +218,7 @@ function Render_data_app(Data_area_render_info,pos_array){
                     controlsDiv.appendChild(colorButton); // Añade el nuevo botón de color
                     controlsDiv.appendChild(deleteButton);
                     newDiv.appendChild(controlsDiv);
-                    container.appendChild(newDiv);
+                    IDContainner.appendChild(newDiv);
 
         })
 
@@ -193,6 +228,7 @@ function Render_data_app(Data_area_render_info,pos_array){
     /*******Efecto de tamaño par cuador creados por render***********/
     function makeDraggableAndResizable(element) {
 
+      console.log("makeDraggableAndResizable  ",element)
 
         let isResizing = false;
         let isDragging = false;
@@ -224,7 +260,7 @@ function Render_data_app(Data_area_render_info,pos_array){
 
         // Evento mousemove para redimensionar o arrastrar
         document.addEventListener('mousemove', (e) => {
-            const containerRect = container.getBoundingClientRect();
+            const containerRect = IDContainner.getBoundingClientRect();
 
             if (isResizing) {
                 const newWidthPercentage = Math.max(1, startWidth + ((e.clientX - startX) / containerRect.width) * 100);
@@ -249,7 +285,7 @@ function Render_data_app(Data_area_render_info,pos_array){
     }
 
     function initializeDiv(divElement) {
-        const containerRect = container.getBoundingClientRect();
+        const containerRect = IDContainner.getBoundingClientRect();
         const divRect = divElement.getBoundingClientRect();
         
         const initialLeft = ((divRect.left - containerRect.left) / containerRect.width) * 100;
@@ -262,19 +298,11 @@ function Render_data_app(Data_area_render_info,pos_array){
         divElement.style.width = `${initialWidth}%`;
         divElement.style.height = `${initialHeight}%`;
     }
-    /*-----------------------------------------------------------------------*/
-    /*******Efecto de tamaño par cuador creados por render***********/
 
-const hexColor1 = rgbToHex(TY[0]);
-const hexColor2 = rgbToHex(TY[1]);
-
-    document.getElementById("gradientColor1").value = hexColor2;
-    document.getElementById("gradientColor2").value = hexColor1;
-    /*---------------------------------------------------------------------*/
-
+     /*******Efecto de tamaño par cuador creados por render***********/
 
 /******************CREAR GENERADOR DE AREAS****************************/
-  container.addEventListener('click', (event) => {
+  IDContainner.addEventListener('click', (event) => {
       
       // Evita la creación de un nuevo div si se hace clic en un div redimensionable existente
       if (event.target.closest('.resizable-div')) {
@@ -284,9 +312,10 @@ const hexColor2 = rgbToHex(TY[1]);
       const newDiv = document.createElement('div');
       newDiv.className = 'resizable-div';
       const uniqueId = `resizable-div-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-            newDiv.id = uniqueId;
+      newDiv.id = uniqueId;
+
       // Obtener las dimensiones del contenedor para el cálculo de porcentajes
-      const containerRect = container.getBoundingClientRect();
+      const containerRect = IDContainner.getBoundingClientRect();
 
       // Calcular la posición y el tamaño inicial en porcentaje
       const clickX = event.clientX - containerRect.left;
@@ -314,7 +343,7 @@ const hexColor2 = rgbToHex(TY[1]);
 
       // Asignar un color aleatorio inicial
       newDiv.style.background = ColorAleatorio
-      newDiv.style.backgroundSize = 'contain';
+      newDiv.style.backgroundSize = 'cover';
       newDiv.style.backgroundPosition = 'center';
       newDiv.style.backgroundRepeat = 'no-repeat';
 
@@ -326,7 +355,6 @@ const hexColor2 = rgbToHex(TY[1]);
         //Contenedor de controles
         const controlsDiv = document.createElement('div');
         controlsDiv.className = 'controls';
-
 
         const colorControls = document.createElement('div');
         colorControls.className = 'Hide_Color_select';
@@ -349,20 +377,20 @@ const hexColor2 = rgbToHex(TY[1]);
       deleteButton.textContent = '❌'; // Usa un emoji para un mejor diseño
       deleteButton.className = 'delete-btn';
       deleteButton.addEventListener('click', (e) => {
-          e.stopPropagation(); // Evita que el clic en el botón active el evento del contenedor principal
-          newDiv.remove();
+            e.stopPropagation();
+            newDiv.remove();
       });
 
       // Botón para seleccionar imagen
       const imageButton = document.createElement('button');
-      imageButton.textContent = '🖼️';
-      imageButton.className = 'image-btn';
+      imageButton.className = 'image-btn icon-images';
       imageButton.addEventListener('click', (e) => {
           e.stopPropagation();
          
-          window.Pos_Select_id = newDiv.id; // Ejemplo de cómo usar una variable global
-          console.log("Elemento seleccionado para imagen:", newDiv.id);
+          Pos_Select_id_square = newDiv.id; // Ejemplo de cómo usar una variable global
+          console.log("Elemento seleccionado:  ", newDiv.id);
           api.send("Select-Imagen-product");
+   
       });
 
       // Botón para cambiar el color (toggle de los controles de color)
@@ -373,8 +401,8 @@ const hexColor2 = rgbToHex(TY[1]);
           e.stopPropagation();
           const controlsContainer = document.getElementById(`containner_color_select-${uniqueId}`);
           if (controlsContainer) {
-            controlsContainer.classList.toggle("Show_Color_select");
-            controlsContainer.classList.toggle("Hide_Color_select");
+              controlsContainer.classList.toggle("Show_Color_select");
+              controlsContainer.classList.toggle("Hide_Color_select");
           }
         };
 
@@ -384,7 +412,7 @@ const hexColor2 = rgbToHex(TY[1]);
       controlsDiv.appendChild(deleteButton);
       newDiv.appendChild(controlsDiv);
 
-      container.appendChild(newDiv);
+      IDContainner.appendChild(newDiv);
 
       // Asumiendo que makeResizableAndDraggable está definida en tu script
       makeResizableAndDraggable(newDiv);
@@ -559,10 +587,13 @@ function rgbToHex(rgbString) {
   return `#${hexR}${hexG}${hexB}`;
 }
 
-
+function tieneImagenDeFondo(elemento) {
+  const estilos = window.getComputedStyle(elemento);
+  const backgroundImage = estilos.backgroundImage;
+  return backgroundImage.startsWith('url(');
+}
 /*-------------------------------------------------------------*/
 /************COLOR GRADIENT CONTAINNER**********************/
-
 
 function showSystemColor(element,containner){
 
@@ -667,21 +698,18 @@ function showSystemColor(element,containner){
           color2=gradienteColor2.value;
           document.getElementById(containner).style.background ='';
           document.getElementById(containner).style.background =`linear-gradient(${angle}, ${color1}, ${color2})`;
-        console.log(angle, color1, color2)
+        //console.log(angle, color1, color2)
       } 
 
       if(gradienteType.value === 'radial') {
             color2=gradienteColor2.value;
             document.getElementById(containner).style.background ='';
             document.getElementById(containner).style.background =`radial-gradient(${angle}, ${color1}, ${color2})`;
-          
       }
 
     });
 
 }
-
-
 
 /************COLOR GRADIENT CONTAINNER**********************/
 /*--------------------------------------------------------*/
@@ -884,7 +912,7 @@ function Open_Image_Select_area(){
 
 api.receive("Imagen-select-section",(event,data)=>{
 
-    document.getElementById("Containner_work_area").style.backgroundImage = `url('${data}')`;
+    document.getElementsByClassName("Containner-work-area")[0].style.backgroundImage = `url('${data}')`;
     Guardar()
 })
 
@@ -911,11 +939,11 @@ function Guardar(){
 
     //console.log("guardar")
     /*-----------------------------------------------------------------*/
-     let background = document.getElementById("Containner_work_area").style.background;
+     let background = document.getElementsByClassName("Containner-work-area")[0].style.background;
     // console.log(background)
 
         let Data = {
-            "id":document.getElementById("Containner_work_area").className,
+            "id":document.getElementsByClassName("Containner-work-area")[0].id,
             "name_area":document.getElementById('SectionControl_TitleArea').value,
             "background":background,
             "product":[]
@@ -924,13 +952,15 @@ function Guardar(){
     /*----------------------------------------------------------------------*/
     let elements = document.querySelectorAll(".resizable-div");
        if(elements.length>0){
-
+     
               elements.forEach((element,index)=>{
+
+                 console.log(element.id)
 
                     let ElementStyle = element.style;
 
                     Data["product"].push({
-                          "id":index,
+                          "id":element.id,
                           "width":ElementStyle.width,
                           "height":ElementStyle.height,
                           "top":ElementStyle.top,
@@ -943,7 +973,7 @@ function Guardar(){
               })
         }
   
-       //  console.log("save_area",Data)
+         console.log("save_area",Data)
 
         Estado_action="Guardar";
 
@@ -953,9 +983,11 @@ function Guardar(){
 /**--------------------Systema de guardado-------------------------**/
 api.receive("Imagen-select-product",(event,data)=>{
 
-    document.getElementById(Pos_Select_id).style.backgroundImage=`url('${data}')`;
+  console.log("Imagen-select-product",Pos_Select_id_square);
 
-    Guardar()
+  document.getElementById(Pos_Select_id_square).style.backgroundImage=`url('${data}')`;
+
+  Guardar()
 
 })
 /**-------------------------funciones de imagen------------------------------**/

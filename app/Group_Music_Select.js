@@ -18,23 +18,23 @@ function Open_Select_music(mainWindow){
   }
 
   // Mostrar el diálogo
-dialog.showOpenDialog(options).then(result => {
+  dialog.showOpenDialog(options).then(result => {
     // Obtener la ruta de las imágenes seleccionadas
-    const filePaths = result.filePaths;
-    
-        if(result.canceled==true){  
+		    const filePaths = result.filePaths;
+		    
+		        if(result.canceled==true){  
 
-                        
-        }
+		                        
+		        }
 
-        if(result.canceled==false){ 
-   
-              copy_music(filePaths,mainWindow)
-        }
+		        if(result.canceled==false){ 
+		   
+		              copy_music(filePaths,mainWindow)
+		        }
 
-  }).catch(err => {
-    console.log(err);
-  });
+		  }).catch(err => {
+		    console.log(err);
+		  });
 
 }
 
