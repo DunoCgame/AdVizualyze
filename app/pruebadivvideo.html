@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style type="text/css">
+	.container-video-inser {
+  margin: 20px;
+}
+
+.video {
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.controles-video {
+  margin-top: 10px;
+}
+
+.controles-video input {
+  padding: 8px;
+  width: 250px;
+  margin-right: 10px;
+}
+
+#padre {
+  margin-top: 20px;
+}
+
+</style>
+</head>
+<div class="container-video-inser">
+  <button class="video">video</button>
+  <div class="controles-video" style="display:none;">
+    <input type="text" id="videoId" placeholder="Inserte Id Video o URL">
+    <button id="saveBtn">Guardar</button>
+    <button id="resetBtn" type="reset">Limpiar</button>
+  </div>
+</div>
+
+<div id="padre"></div>
+<script type="text/javascript">
+document.querySelector('.video').addEventListener('click', () => {
+  	const controles = document.querySelector('.controles-video');
+  	controles.style.display = controles.style.display === 'none' ? 'block' : 'none';
+});
+
+document.getElementById("resetBtn").addEventListener('click', () => {
+
+  document.getElementById("videoId").value="";
+
+});
+
+document.getElementById('saveBtn').addEventListener('click', () => {
+	  const input = document.getElementById('videoId').value.trim();
+	  const padre = document.getElementById('padre');
+	  padre.innerHTML = ''; // Limpiar contenido anterior
+
+	  let embedHTML = '';
+
+	 if (input.includes('youtube.com') || input.includes('youtu.be')) {
+
+	    const videoId = input.split('v=')[1]?.split('&')[0] || input.split('/').pop();
+	    embedHTML = `<iframe width="560" height="315" src="https://www.youtube.com/embed/${videoId}" frameborder="0" allowfullscreen></iframe>`;
+	  }
+	  else 
+		  if (input.includes('vimeo.com')) {
+
+		    const videoId = input.split('/').pop();
+		    embedHTML = `<iframe src="https://player.vimeo.com/video/${videoId}" width="560" height="315" frameborder="0" allowfullscreen></iframe>`;
+
+		  } 
+	  else 
+		  if (input.match(/\.(mp4|webm|ogg)$/)) {
+
+		    embedHTML = `<video width="100%" height="100%" controls><source src="${input}" type="video/mp4">Tu navegador no soporta el video.</video>`;
+
+		  } 
+		  else {
+
+		    embedHTML = `<p>Formato de video no reconocido.</p>`;
+
+		  }
+
+	  padre.innerHTML = embedHTML;
+
+});
+/*******************************
+
+  const container = document.getElementById(id);
+  const iframe = document.createElement('iframe');
+  iframe.src = `https://www.youtube.com/embed/${videoId}`;
+  iframe.src = `https://www.youtube.com/embed/h8uP6OuZD4o`;
+  iframe.frameBorder = '0';
+  iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
+  iframe.allowFullscreen = true;
+  iframe.style.width = '100%';
+  iframe.style.height = '100%';
+  container.appendChild(iframe);
+
+
+**********************************/
+</script>
+</html>

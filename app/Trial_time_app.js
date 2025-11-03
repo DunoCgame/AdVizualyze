@@ -15,7 +15,6 @@ function Get_data_time(){
 }
 
 function Save_data_init_time(data){
-
     fs.writeFile(path.join(PathDB.Time_Trial).toString(),JSON.stringify(data),
                   {
                     encoding: "utf8",
@@ -31,7 +30,6 @@ function Save_data_init_time(data){
                        console.log(Get_data_time());
                     }
     });
-
 }
 
 module.exports = {

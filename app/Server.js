@@ -1,8 +1,6 @@
-
 const path = require('path')
 const fs = require('fs')
 const os = require('os')
-
 
 module.exports = function Server_system(){
 
@@ -37,8 +35,8 @@ module.exports = function Server_system(){
             });
 
             // Manejo de errores 404
-           app.use((req, res, next) => {
-                res.status(404).send('404 Not Found');
+            app.use((req, res, next) => {
+              res.status(404).send('404 Not Found');
             });
 
             // Manejo de errores 500
@@ -46,62 +44,59 @@ module.exports = function Server_system(){
                 console.error(err.stack);
                 res.status(500).send('500 Internal Server Error');
             });
+            /*************************************************************/
+            io.on('connection', (socket) => {
+                
+                console.log('Un usuario se ha conectado');
+
+                io.emit("data-publish",Data_App);
+
+                socket.on('Select-Musica', (mensaje) => {
+
+                        io.emit('Select-Musica', mensaje);  
+                });
+
+                socket.on('Play', (mensaje) => {
+                    
+                        io.emit('Play');
+                });
 
 
-/*************************************************************/
-io.on('connection', (socket) => {
-    
-    console.log('Un usuario se ha conectado');
+                socket.on('Pause', (mensaje) => {
 
-    io.emit("data-publish",Data_App);
+                    io.emit('Pause');
 
-    socket.on('Select-Musica', (mensaje) => {
+                });
 
-            io.emit('Select-Musica', mensaje);  
-    });
+                socket.on("Volumen", (data) => {
 
-    socket.on('Play', (mensaje) => {
-        
-            io.emit('Play');
-    });
-
-
-    socket.on('Pause', (mensaje) => {
-
-        io.emit('Pause');
-
-    });
-
-    socket.on("Volumen", (data) => {
-
-            io.emit('Volumen',data);
-    })
-
-    fs.watch(PathDB.data_square,(eventType, filename) => {
-            
-                fs.readFile(PathDB.data_square,(err, data) => {
-                                
-                    if (err) throw err;
-
-                    io.emit("data-publish",JSON.parse(data));
+                        io.emit('Volumen',data);
                 })
 
-            console.log("reload data server");
+                fs.watch(PathDB.data_square,(eventType, filename) => {
+                        
+                            fs.readFile(PathDB.data_square,(err, data) => {
+                                            
+                                if (err) throw err;
 
-    });
+                                io.emit("data-publish",JSON.parse(data));
+                            })
+
+                        console.log("reload data server");
+
+                });
 
 
-    // Manejo de la desconexión
-    socket.on('disconnect', () => {
-        console.log('Un usuario se ha desconectado');
-    });
-});
-
-/*************************************************************/
+                // Manejo de la desconexión
+                socket.on('disconnect', () => {
+                    console.log('Un usuario se ha desconectado');
+                });
+            });
+            /*************************************************************/
             // Iniciar el servidor
             server.listen(PORT,() => {
-                console.log(`Servidor escuchando en http://localhost:${PORT}`);
-                console.log("Servidor escuchando en "+"http://"+dataOs["address"]+":"+PORT);
+                    console.log(`Servidor escuchando en http://localhost:${PORT}`);
+                    console.log("Servidor escuchando en "+"http://"+dataOs["address"]+":"+PORT);
             });
 
 }

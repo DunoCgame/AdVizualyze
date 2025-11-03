@@ -147,9 +147,10 @@
 </style>
 <body>
 <section class="Show-area" id="containner_bienvenida">
-	<h1 class="saludo">Bienvenida</h1>
+	
+  <h1 class="saludo">Bienvenido</h1>
 </section>
-<section class="Hide-area" id="containner_control_install">                              
+<section class="Hide-area" id="containner_control_install">
 			<h1 class="title-system-install">Sistema de instalación de Aplicación</h1>
 			<div class="containner-scan">
 				 <div id="reader" style="width: 400px"></div>
@@ -256,12 +257,20 @@ function Trial_app(){
 	TiempoInicial = new Date();
 	TiempoFinal = new Date(TiempoInicial.getTime() + 24 * 60 * 60 * 1000);
 
+  console.log(TiempoInicial)
+
+/*
+{"status_trial_time":"","TiempoInicial":"","TiempoFinal":""}
+*/
+
 	api.send("Time-trial-system-activate",{
+          "status_trial_time":"activated",
 					"TiempoInicial":TiempoInicial,
 					"TiempoFinal":TiempoFinal
-					})
+	})
 
 	api.send("App-trial-system")
+
 }
 
 		

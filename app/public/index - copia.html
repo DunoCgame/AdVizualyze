@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+* {
+  margin: 0;
+  padding: 0;
+}
+.slideshow-container {
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+  overflow: hidden;
+}
+.slide {
+  position: absolute;
+  width: 100vw;
+  height: 100vh;
+  top: 0;
+  left: 0;
+  color: white;
+  display: none;
+}
+.article {
+  position: absolute;
+}
+.imagen-area{
+     width: 100%;
+  height: 100%;
+} 
+
+
+.imagen-square {
+
+    object-fit: fill;
+}
+    </style>
+</head>
+<body>
+<div id="slideshow-container" class="slideshow-container"></div>
+<audio id="audio" src="" loop autoplay></audio>
+<script src="assets/publish_assets/javascript/Socket.IOv3.0.1.js"></script>
+<script>
+let socket = io("http://192.168.1.70:3000", {
+    withCredentials: true,
+});
+
+
+socket.on("data-publish", (data) => {
+    Render_data(data);
+});
+
+socket.on("Select-Musica", (music) => {
+    console.log('la musica es :', music);
+    var audio = document.getElementById('audio');
+    audio.src = music;
+    audio.play();
+});
+
+socket.on("Play", () => {
+    var audio = document.getElementById('audio');
+    audio.play();
+});
+
+socket.on("Pause", () => {
+    var audio = document.getElementById('audio');
+    audio.pause();
+});
+
+socket.on("Volumen", (volume) => {
+    var audio = document.getElementById('audio');
+    audio.volume = volume;
+});
+
+let Contain_areas = document.getElementById("slideshow-container");
+let slides;
+let currentSlide = 0;
+let slideDurations = [];
+
+function Render_data(data) {
+
+    Contain_areas.innerHTML = "";
+    currentSlide = 0;
+    slideDurations = [];
+
+    data.forEach(function(area, index) {
+
+        slideDurations.push(area.delay);
+
+        Contain_areas.innerHTML += `<section class="slide"></section>`;
+        document.getElementsByClassName("slide")[index].style.background = area.background;
+
+        if(area.imageURL != ""){
+              const imgElementArea = document.createElement('img');
+              imgElementArea.src = area.imageURL; 
+              imgElementArea.className = "imagen-area";
+              imgElementArea.style.width = '100%';
+              imgElementArea.style.height = '100%';
+              document.getElementsByClassName("slide")[index].appendChild(imgElementArea);
+        }   
+
+        if(area.video != ""){
+            console.log(area.video)
+             InscrustarVideo(document.getElementsByClassName("slide")[index],area.video)
+        }
+
+
+        let area_product = document.getElementsByClassName("slide")[index];
+
+        area.product.forEach(function(product) {
+
+            let article = document.createElement("div");
+            article.className = "article";
+            article.style.left = product.left;
+            article.style.top = product.top;
+            article.style.width = product.width;
+            article.style.height = product.height;
+            article.style.background = product.background;
+          
+            area_product.appendChild(article);
+
+            /*-----------------------------------*/
+
+            if (product.imageURL=="") {
+                // Lógica si está vacío
+                //console.log("¡El imageURl está vacío! 🚫");
+
+            } else {
+
+                const imgElement = document.createElement('img');
+                imgElement.src = product.imageURL;
+                imgElement.className = "imagen-square";
+                imgElement.id = "imagen_square";
+                imgElement.style.width = '-webkit-fill-available';
+                imgElement.style.height = '-webkit-fill-available';
+
+                article.appendChild(imgElement);
+            }
+            /*----------------------------------*/
+            if (product.Text=== "undefined"){
+
+            } else {
+                RenderTextenDiv(article,product.Text)
+            }
+
+        });
+    });
+
+    slides = document.querySelectorAll('.slide');
+  
+    initializeSlides();
+    setTimeout(showNextSlide, slideDurations[currentSlide]);
+   
+    
+}
+
+function initializeSlides() {
+
+    for (var i = 0; i < slides.length; i++) {
+        slides[i].style.display = "none";
+    }
+    slides[currentSlide].style.display = "block";
+
+    if(slides[currentSlide].children[0].tagName=="VIDEO" || slides[currentSlide].children[0].tagName=="IFRAMW"){
+
+        slides[currentSlide].children[0].play();
+        document.getElementById('audio').pause();
+
+    }
+
+
+}
+
+function showNextSlide() {
+   
+    slides[currentSlide].style.display = "none";
+
+    currentSlide++;
+
+    if (currentSlide >= slides.length) {
+        currentSlide = 0;
+    }
+
+    initializeSlides();
+
+    if (slides.length>1){
+
+        setTimeout(showNextSlide, slideDurations[currentSlide]);
+
+    };
+
+
+}
+
+
+function RenderTextenDiv(divElement, datosObjeto) {
+
+
+            // 1. CONSTRUIR EL HTML INTERNO (.text-content)
+            let finalHTML = '';
+            if (datosObjeto.titulo) {
+                finalHTML += `<h3>${datosObjeto.titulo}</h3>`;
+            }
+            if (datosObjeto.contenidoHTML) {
+                 finalHTML += datosObjeto.contenidoHTML;
+            }
+
+            // Crear o encontrar el contenedor de contenido de texto
+            let textContentDiv = divElement.querySelector('.text-content');
+            if (!textContentDiv) {
+                textContentDiv = document.createElement('div');
+                textContentDiv.className = 'text-content';
+                divElement.appendChild(textContentDiv);
+            }
+            textContentDiv.innerHTML = finalHTML;
+
+            // 2. APLICAR POSICIONAMIENTO Y ESTILOS AL DIV PRINCIPAL
+            
+            // Posicionamiento Flexbox (Interno)
+            divElement.style.alignItems = datosObjeto.posicionVertical || 'flex-start';
+            divElement.style.justifyContent = datosObjeto.posicionHorizontal || 'flex-start';
+            divElement.dataset.vAlign = datosObjeto.posicionVertical;
+            divElement.dataset.hAlign = datosObjeto.posicionHorizontal;
+
+            // Tamaño y Posición (Absoluta)
+            divElement.style.left = `${datosObjeto.left}%`;
+            divElement.style.top = `${datosObjeto.top}%`;
+            divElement.style.width = `${datosObjeto.width}%`;
+            divElement.style.height = `${datosObjeto.height}%`;
+            divElement.dataset.left = datosObjeto.left;
+            divElement.dataset.top = datosObjeto.top;
+            divElement.dataset.width = datosObjeto.width;
+            divElement.dataset.height = datosObjeto.height;
+
+            // Color de Fondo
+            divElement.style.backgroundColor = datosObjeto.backgroundColor;
+            
+           // console.log(`Div ${datosObjeto.id} reconstruido visualmente.`);
+}
+
+
+function InscrustarVideo(divElement,input){
+
+    //padre.innerHTML = ''; // Limpiar contenido anterior
+
+    let embedHTML = '';
+
+   if (input.includes('youtube.com') || input.includes('youtu.be')) {
+
+      const videoId = input.split('v=')[1]?.split('&')[0] || input.split('/').pop();
+      embedHTML = `<iframe width="100%" height="100%" src="https://www.youtube.com/embed/${videoId}autoplay=1" frameborder="0" allowfullscreen></iframe>`;
+    }
+    else 
+      if (input.includes('vimeo.com')) {
+
+        const videoId = input.split('/').pop();
+        embedHTML = `<iframe src="https://player.vimeo.com/video/${videoId}" width="560" height="315" frameborder="0" allowfullscreen></iframe>`;
+        
+      } 
+    else 
+      if (input.match(/\.(mp4|webm|ogg)$/)) {
+
+        embedHTML = `<video width="100%" height="100%" controls ><source src="${input}" type="video/mp4">Tu navegador no soporta el video.</video>`;
+
+      } 
+      else {
+
+        embedHTML = `<p>Formato de video no reconocido.</p>`;
+
+      }
+
+    divElement.innerHTML = embedHTML;
+
+}
+
+</script>
+</body>
+</html>

@@ -1,15 +1,1 @@
-{
-            "status":false,
-            "code":"",
-            "date":"",
-            "trial":false,
-            "machine": {
-                "hostname":"",
-                "platform":"",
-                "cpu":""
-          },
-          "server":{
-            "ip":"",
-            "port":"3000"
-          }
-    }
+{"status":false,"code":"","date":"","trial":false,"machine":{"hostname":"","platform":"","cpu":""},"server":{"ip":"","port":"3000"}}

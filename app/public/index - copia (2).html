@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+       * { margin: 0; padding: 0; box-sizing: border-box; }
+        body, html { width: 100vw; height: 100vh; }
+        .slideshow-container {
+            width: 100vw;
+            height: 100vh;
+          position: relative;
+            overflow: hidden;
+            background: #111;
+        }
+        .slide {
+            position: absolute;
+            width: 100vw;
+            height: 100vh;
+            top: 0;
+            left: 0;
+            color: white;
+        }
+
+        .article {
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+        .imagen-area, .imagen-square {
+            width: 100%;
+            height: 100%;
+            object-fit: fill;
+        }
+      .text-content {
+            padding: 10px;
+            background: rgba(0,0,0,0.5);
+            border-radius: 8px;
+            color: #fff;
+            text-align: center;
+        }
+</style>
+</head>
+<body>
+<div id="slideshow-container" class="slideshow-container"></div>
+<audio id="audio" src="" loop autoplay></audio>
+<script src="assets/publish_assets/javascript/Socket.IOv3.0.1.js"></script>
+<script>
+const socket = io("http://192.168.1.70:3000", { withCredentials: true });
+
+const audio = document.getElementById('audio');
+const container = document.getElementById("slideshow-container");
+let slides = [];
+let currentSlide = 0;
+let slideDurations = [];
+let slideTimeout = null;
+
+// --- Socket Events ---
+socket.on("data-publish", Render_data);
+socket.on("Select-Musica", music => {
+    audio.src = music;
+    audio.play();
+});
+socket.on("Play", () =>{ 
+    audio.play() 
+    console.log("play")
+});
+socket.on("Pause", () => audio.pause());
+socket.on("Volumen", volume => { audio.volume = volume; });
+
+// --- Render Functions ---
+function Render_data(data) {
+ 
+  /*
+    container.innerHTML = "";
+    currentSlide = 0;
+    slideDurations = data.map(area => area.delay);
+*/
+
+    data.forEach((area,idx) => {
+
+        const slide = document.createElement('section');
+        slide.className = "slide";
+        slide.style.background = area.background || "#222";
+
+
+        // Imagen de fondo
+        if (area.imageURL){
+
+            const img = document.createElement('img');
+            img.src = area.imageURL;
+            img.className = "imagen-area";
+            slide.appendChild(img);
+           
+        }
+ 
+        // Video
+
+        if (area.video){
+          
+           // InscrustarVideo(slide, area.video);
+            
+
+        }
+
+        // Productos
+        (area.product || []).forEach(product => {
+          
+            const article = document.createElement("div");
+            article.className = "article";
+
+            Object.assign(article.style, {
+
+                left: product.left,
+                top: product.top,
+                width: product.width,
+                height: product.height,
+                background: product.background || "transparent"
+
+            });
+            
+
+            // Imagen del producto
+            if (product.imageURL) {
+
+                const img = document.createElement('img');
+                img.src = product.imageURL;
+                img.className = "imagen-square";
+                article.appendChild(img);
+            }
+
+            // Texto del producto
+        
+            if (product.Text && product.Text !== "undefined") {
+
+                RenderTextenDiv(article, product.Text);
+
+            }
+           
+
+            slide.appendChild(article);
+
+        }); 
+
+        container.appendChild(slide);
+    });
+
+    slides = Array.from(document.querySelectorAll('.slide'));
+   showSlide(0);
+}
+
+function showSlide(idx){
+    slides.forEach((slide, i) => {
+        slide.classList.toggle('active', i === idx);
+        if (i === idx) {
+            const video = slide.querySelector('video, iframe');
+            if (video && video.tagName === "VIDEO") {
+               
+               video.play();
+               console.log("En el video")
+               audio.pause();
+
+            }
+            else{
+                video.pause();
+                audio.play();
+               console.log("sin En el video")
+            }
+        }
+    });
+
+    if(slideTimeout){ clearTimeout(slideTimeout); }
+
+    slideTimeout = setTimeout(() => {
+        
+        currentSlide = (currentSlide + 1) % slides.length;
+        showSlide(currentSlide);
+    
+    }, slideDurations[idx] || 3000);
+}
+
+function RenderTextenDiv(divElement, datosObjeto) {
+    let finalHTML = '';
+    if (datosObjeto.titulo) finalHTML += `<h3>${datosObjeto.titulo}</h3>`;
+    if (datosObjeto.contenidoHTML) finalHTML += datosObjeto.contenidoHTML;
+
+    let textContentDiv = divElement.querySelector('.text-content');
+    if (!textContentDiv) {
+        textContentDiv = document.createElement('div');
+        textContentDiv.className = 'text-content';
+        divElement.appendChild(textContentDiv);
+    }
+    textContentDiv.innerHTML = finalHTML;
+
+    // Flex alignment
+    divElement.style.alignItems = datosObjeto.posicionVertical || 'flex-start';
+    divElement.style.justifyContent = datosObjeto.posicionHorizontal || 'flex-start';
+    // Tamaño y posición
+    if (datosObjeto.left) divElement.style.left = `${datosObjeto.left}%`;
+    if (datosObjeto.top) divElement.style.top = `${datosObjeto.top}%`;
+    if (datosObjeto.width) divElement.style.width = `${datosObjeto.width}%`;
+    if (datosObjeto.height) divElement.style.height = `${datosObjeto.height}%`;
+    // Fondo
+    if (datosObjeto.backgroundColor) divElement.style.backgroundColor = datosObjeto.backgroundColor;
+}
+
+function InscrustarVideo(divElement, input) {
+    let embedHTML = '';
+    if (/youtube\.com|youtu\.be/.test(input)) {
+        const videoId = input.match(/(?:v=|\/)([0-9A-Za-z_-]{11})/)?.[1];
+        if (videoId) {
+            embedHTML = `<iframe width="100%" height="100%" src="https://www.youtube.com/embed/${videoId}?" frameborder="0" allowfullscreen></iframe>`;
+        }
+    } else if (/vimeo\.com/.test(input)) {
+        const videoId = input.split('/').pop();
+        embedHTML = `<iframe src="https://player.vimeo.com/video/${videoId}?" width="100%" height="100%" frameborder="0" allowfullscreen></iframe>`;
+    } else if (/\.(mp4|webm|ogg)$/i.test(input)) {
+        embedHTML = `<video width="100%" height="100%" controls><source src="${input}" type="video/mp4">Tu navegador no soporta el video.</video>`;
+    } else {
+        embedHTML = `<p>Formato de video no reconocido.</p>`;
+    }
+    divElement.innerHTML += embedHTML;
+}
+</script>
+</body>
+</html>
+

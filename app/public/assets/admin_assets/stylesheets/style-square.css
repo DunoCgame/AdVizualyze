@@ -1,0 +1,263 @@
+.resizable-div {
+    border: 1px solid #2980b9;
+    position: absolute;
+    cursor: move;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+}
+
+.resizable-div:hover {
+    outline: 1px solid #fff;
+    box-shadow: 0 0 1px rgba(0,0,0,0.5);
+}
+
+.resizable-div .controls {
+    display: flex;
+    gap: 5px;
+    margin-bottom: 5px;
+    background: rgb(53 53 53 / 43%);
+    padding: 6px;
+    z-index: 9999999;
+    flex-direction: row;
+    justify-content: center;
+}
+
+
+.resizable-div button {
+    padding: 5px 10px;
+    font-size: 19px;
+    cursor: pointer;
+    border: none;
+    border-radius: 3px;
+    background-color: #f0f0f0;
+    color: #333;
+}
+
+.resizable-div button.image-btn {
+    background-color: rgb(94 212 14 / 53%);
+    color: white;
+}
+
+.resizable-div button.color-btn {
+    background-color: rgb(103 58 183 / 53%);
+    color: white;
+}
+
+.resizable-div button.text-btn {
+    background-color: rgb(3 169 244 / 47%);
+    color: white;
+}
+
+.resizable-div button.delete-btn {
+    background-color: rgb(231 76 60 / 61%);
+    color: white;
+}
+
+.resizable-div img {
+  
+   /* position: absolute;*/
+}
+.imagen-square{
+        width: 100%;
+        height: 100%;
+        object-fit: fill;
+}
+.resize-handle {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 15px;
+    height: 15px;
+    background-color: #ffc107;
+    cursor: se-resize;
+    z-index: 999;
+}
+
+.sub-div-containner{
+    display: flex;
+    position: absolute;
+}
+
+.Show_Color_select {
+    display: block;
+    background: white;
+    position: absolute;
+    z-index: 99999;
+    left: 145px;
+    top: 68px;
+    padding: 5px;
+    width: 200px;
+    height: 207px;
+}
+.Hide_Color_select{
+ 
+    display:none;
+
+}
+#containner_color_select {
+    background: white;
+    position: absolute;
+    z-index: 99999;
+    left: 145px;
+    top: 68px;
+    padding: 5px;
+    width: 200px;
+    height: 250px;
+}
+
+.hue {
+  background: linear-gradient(to right,
+    hsl(0, 100%, 50%),
+    hsl(60, 100%, 50%),
+    hsl(120, 100%, 50%),
+    hsl(180, 100%, 50%),
+    hsl(240, 100%, 50%),
+    hsl(300, 100%, 50%),
+    hsl(360, 100%, 50%));
+}
+
+.alpha {
+  background: linear-gradient(to right, transparent, black);
+}
+
+.color-plane {
+    width: 100%;
+    height: 135px;
+    background: linear-gradient(to right, white, transparent),
+    linear-gradient(to top, black, transparent),
+    hsl(180, 100%, 50%);
+    cursor: crosshair;
+    margin-bottom: 20px;
+}
+
+.containner-btn-square {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+
+
+/**------------------EDITOR DE TEXTO-------------------------------------------**/
+#text-editor-panel {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    border: 1px solid #ccc;
+    padding: 8px;
+    z-index: 1000;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    width: 350px;
+    max-width: 94%;
+    display: none;
+    flex-direction: column;
+    gap: 10px;
+    border-radius: 8px;
+}
+        #text-editor-area {
+            min-height: 100px;
+            resize: vertical;
+            padding: 10px;
+            border: 1px solid #ddd;
+            outline: none; 
+            cursor: text;
+        }
+
+        #text-editor-area:empty::before {
+            content: attr(placeholder);
+            color: #999;
+            pointer-events: none;
+        }
+
+        .text-format-buttons {
+            display: flex;
+            gap: 8px; 
+            flex-wrap: wrap;
+            padding: 8px;
+            background-color: #f8f8f8;
+            border-radius: 5px;
+            align-items: center;
+        }
+
+        .text-format-buttons button {
+            min-width: 35px;
+            padding: 8px 10px;
+            cursor: pointer;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background-color: #ffffff;
+            transition: background-color 0.1s;
+        }
+        
+        /* Estilo para los selectores */
+        #font-size-select, #font-family-select {
+            padding: 6px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            min-width: 80px;
+        }
+        
+        /* Controles de Posicionamiento (NUEVOS) */
+        .position-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #fafafa;
+        }
+        
+        .position-controls > div {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .position-controls input[type="range"] {
+            flex-grow: 1;
+            height: 12px;
+            /* Estilo del thumb (pulgar) para ser más visible */
+            -webkit-appearance: none;
+            appearance: none;
+            background: #e0e0e0;
+            border-radius: 5px;
+        }
+
+        .position-controls input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 15px;
+            height: 15px;
+            background: #007bff;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .resizable-div-color .text-content {
+            padding: 10px;
+            max-width: 100%;
+            max-height: 100%;
+            overflow: auto;
+            box-sizing: border-box;
+            pointer-events: none;
+            width: 100%; 
+        }
+
+
+        #save-text-btn{
+            background: #2196f3;
+            color: white;
+            padding: 5px;
+        }
+
+        #close-text-editor {
+            background-color: #f44336;
+            color: white;
+            padding: 5px;
+        }
+
+/**----------------------EDITOR DE TEXTO---------------------------------------**/

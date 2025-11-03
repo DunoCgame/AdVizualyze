@@ -4,18 +4,80 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Descripción de la página" class="meta-descripcion" id="meta-descripcion">
-  <meta name="keywords" content="palabra clave 1, palabra clave 2" class="meta-keywords" id="meta-keywords">
-  <meta name="author" content="Nombre del autor" class="meta-autor" id="meta-autor">
   <link rel="stylesheet" type="text/css" href="assets/admin_assets/stylesheets/style-estructure.css">
   <link rel="stylesheet" type="text/css" href="assets/admin_assets/stylesheets/style-reproductor.css">
-  <link rel="stylesheet" type="text/css" href="assets/admin_assets/stylesheets/styleColorSelectSquare.css">
+  <link rel="stylesheet" type="text/css" href="assets/admin_assets/stylesheets/style-square.css">
+  <link rel="stylesheet" type="text/css" href="assets/admin_assets/stylesheets/style-Timer.css">
   <link rel="stylesheet" type="text/css" href="assets/admin_assets/icono/style.css">
 </head>
+<style type="text/css">
+  
+</style>
 <title id="version"></title>
+
 <div id="containnerContador">
   <label id="Contador"></label>
 </div>
+
 <body class="control-app" id="app">
+    <div id="text-editor-panel">
+        <h3>Editor de Texto</h3>
+
+        <div class="text-format-buttons">
+            <div class="position-controls">
+                <span>Posición del Contenido:</span>
+                <div>
+                    <span>Vertical:</span>
+                    <input type="range" id="vertical-align-slider" min="0" max="2" value="0" step="1" title="Alineación Vertical">
+                </div>
+                <div>
+                    <span>Horizontal:</span>
+                    <input type="range" id="horizontal-align-slider" min="0" max="2" value="0" step="1" title="Alineación Horizontal">
+                </div>
+            </div>
+            
+            <button data-command="undo" title="Deshacer">&#8630;</button>
+            <button data-command="redo" title="Rehacer">&#8631;</button>
+
+            <select id="font-family-select" title="Familia de Fuente" data-command="fontName">
+                <option value="Arial, sans-serif">Arial</option>
+                <option value="Verdana, sans-serif">Verdana</option>
+                <option value="Tahoma, sans-serif">Tahoma</option>
+                <option value="Georgia, serif">Georgia</option>
+                <option value="Courier New, monospace">Courier New</option>
+            </select>
+
+            <select id="font-size-select" title="Tamaño de Fuente" data-command="fontSize">
+                <option value="1">Pequeño</option>
+                <option value="2">Normal</option>
+                <option value="3" selected>Mediano</option>
+                <option value="4">Grande</option>
+                <option value="5">Extra Grande</option>
+            </select>
+
+            <label id="font-color-label" title="Color de Fuente">
+                Color:
+                <input type="color" id="font-color-input" value="#000000" data-command="foreColor">
+            </label>
+            
+            <button data-command="justifyLeft" title="Alinear Izquierda"><span>&#8592;</span></button>
+            <button data-command="justifyCenter" title="Alinear Centro"><span>&#8863;</span></button>
+            <button data-command="justifyRight" title="Alinear Derecha"><span>&#8594;</span></button>
+            <button data-command="justifyFull" title="Justificar"><span>&#8801;</span></button>
+            
+            <button data-command="bold" title="Negrita"><b>B</b></button>
+            <button data-command="italic" title="Cursiva"><i>I</i></button>
+            <button data-command="underline" title="Subrayado"><u>U</u></button>
+            <button data-command="createLink" title="Insertar Enlace">&#128279;</button>
+            <button data-command="removeFormat" title="Limpiar Formato">T&#x2338;</button>
+            <button data-command="insertUnorderedList" title="Lista No Ordenada">Lista (•)</button>
+            <button data-command="insertOrderedList" title="Lista Ordenada">Lista (1.)</button>
+            <button data-command="formatBlock" data-value="h4" title="Encabezado">H4</button>
+        </div>
+        <div id="text-editor-area" contenteditable="true" placeholder="Escribe tu texto aquí..."></div>
+        <button id="save-text-btn">Guardar Texto</button>
+        <button id="close-text-editor" style="background-color: #f44336; color: white;">Cerrar</button>
+    </div>
       <div class="Containner-area" id="container_area">          
       </div>  
       <div class="Control-imagen">
@@ -37,7 +99,7 @@
                           <button class="icon-next2 btn-music Siguiente"  id="siguiente" ></button>
                         </div>  
                         <div>
-                          <button class="icon-music btn-music select-music" id="select-music" onclick="select_song()"></button>
+                          <button class="icon-music btn-music select-music" id="select-music" onclick="Search_music()"></button>
                         </div>  
                   </section>
                     <!----------------->
@@ -47,7 +109,7 @@
                      </div>
                       <div>
                        <span class="icon-volume-decrease"></span>  
-                       <input type="range" id="volumen" min="0" max="1" step="0.1" value="1">
+                       <input type="range" class="volumen" id="volumen" min="0" max="1" step="0.1" value="1">
                        <span class="icon-volume-increase"></span>
                      <div>
                   </section>   
@@ -58,85 +120,106 @@
                       </div>
                       <div>
                          <span class="icon-volume-decrease"></span>   
-                         <input type="range" id="volumen_externo" min="0" max="1" step="0.1" value="1">
+                         <input type="range" class="volumen_externo" id="volumen_externo" min="0" max="1" step="0.1" value="1">
                          <span class="icon-volume-increase"></span>
                       </div>
                   </section>
                         <!----------------->
                   <section class="containner-progres-bar">
                       <section class="base-progres-bar">
-                           <div id="progress-bar"></div>
+                           <div id="progress-bar-line">
+                                 <input type="range" id="progresoBarra" value="0" min="0" max="100">
+                           </div>
                       </section>
+            <div id="tiempo" style="color:white">
+                <span id="tiempoActual">0:00</span> / <span id="duracionTotal">0:00</span>
+            </div>
+                    </section>
+
                   </section>
                         <!----------------->
                   <section class="containner-musica">
-                    <select class="select-musica" id="name_select_music" onchange="obtenerValor()">
-                      <option>musica</option>
+                    <select class="select-musica" id="name_select_music" onchange="Select_music_option()">
                     </select>
                   </section>
             </div>
       </div>
 </body>
+
 <script type="text/javascript" src="assets/admin_assets/icono/selection.json"></script>
 <script type="text/javascript" src="assets/admin_assets/javascript/Socket.IOv3.0.1.js"></script>
 <script type="text/javascript" src="assets/admin_assets/javascript/server_client.js"></script>
 <script type="text/javascript" src="assets/admin_assets/javascript/main.js"></script>
+<script type="text/javascript" src="assets/admin_assets/javascript/Funciones_area.js"></script>
+<script type="text/javascript" src="assets/admin_assets/javascript/Funciones_square.js"></script>
 <script type="text/javascript" src="assets/admin_assets/javascript/music_control.js"></script>
+<script type="text/javascript" src="assets/admin_assets/javascript/AudioSpeak.js"></script>
+                                                                
 <script type="text/javascript">
 
-api.receive("data-time-counter",(event,objetoTiempo)=>{
+    api.receive("data-time-counter",(event,objetoTiempo)=>{
 
-    /*------------------------------------------*/
-     let containner = document.getElementById("containnerContador");
-     let Contador = document.getElementById("Contador");
+        console.log(objetoTiempo.status_trial_time)
+        console.log(new Date(objetoTiempo.TiempoInicial))
+        console.log(new Date(objetoTiempo.TiempoFinal))
 
-  function actualizarContador(){
-       
-        const tiempoInicial = new Date(objetoTiempo.TiempoInicial).getTime();
-        const tiempoFinal = new Date(objetoTiempo.TiempoFinal).getTime();        
-        const ahora = new Date().getTime();
-        const tiempoRestante = tiempoFinal - ahora;
+        if(objetoTiempo.status_trial_time=="activated"){
 
-         // Validar que la hora actual sea posterior al TiempoInicial
-        if (ahora < tiempoInicial) {
-            Contador.innerHTML = "Esperando inicio...";
-            return; // No hacer nada más hasta que el tiempo inicial haya pasado
+              function actualizarContador(){
+                   
+                    let containner = document.getElementById("containnerContador");
+                    let Contador = document.getElementById("Contador");           
+                    const tiempoInicial = new Date(objetoTiempo.TiempoInicial).getTime();
+                    const tiempoFinal = new Date(objetoTiempo.TiempoFinal).getTime();        
+                    const ahora = new Date().getTime();
+                    const tiempoRestante = tiempoFinal - ahora;
+
+                    if (ahora < tiempoInicial) {
+                        Contador.innerHTML = "Esperando inicio...";
+                        Speak("Esperando inicio");
+                        return; // No hacer nada más hasta que el tiempo inicial haya pasado
+                    }
+                    if (tiempoRestante<0) {
+                        console.log(tiempoRestante)
+                        clearInterval(intervalo);
+                        Contador.innerHTML = "¡Tiempo terminado!";
+                        Speak("Tiempo terminado");
+                        setTimeout(()=>{ 
+                         //api.send("cierre-de-aplicacion-time-trial") 
+                       },6000)
+                    }
+                    if (tiempoRestante>0){
+
+                      const dias = Math.floor(tiempoRestante / (1000 * 60 * 60 * 24));
+                      const horas = Math.floor((tiempoRestante % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                      const minutos = Math.floor((tiempoRestante % (1000 * 60 * 60)) / (1000 * 60));
+                      const segundos = Math.floor((tiempoRestante % (1000 * 60)) / 1000);
+                      Contador.innerHTML = `${horas} hr ${minutos} min ${segundos} seg`;
+                    }
+                   
+              }
+
+              setTimeout(function(){
+                  
+                actualizarContador();
+
+              },1000)
+               
+              const intervalo = setInterval(actualizarContador, 1000);
+
         }
 
-        if (tiempoRestante<= 0) {
-            clearInterval(intervalo);
-            Contador.innerHTML = "¡Tiempo terminado!";
-            return;
+        if(objetoTiempo.status_trial_time=="completed"){
+          Contador.innerHTML="Tiempo de prueba terminado"
+          Speak("Tiempo de prueba terminado");
+
+             setTimeout(()=>{  
+                //api.send("quit-app") 
+             },5000)
+
         }
 
-        const dias = Math.floor(tiempoRestante / (1000 * 60 * 60 * 24));
-        const horas = Math.floor((tiempoRestante % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        const minutos = Math.floor((tiempoRestante % (1000 * 60 * 60)) / (1000 * 60));
-        const segundos = Math.floor((tiempoRestante % (1000 * 60)) / 1000);
-
-        Contador.innerHTML = `${horas} hr ${minutos} min ${segundos} seg`;
-       
-    }
-
-   setTimeout(function(){
-      actualizarContador();
-   },1000) // Actualizar el contador inmediatamente y luego cada segundo
-   
-   const intervalo = setInterval(actualizarContador, 1000);
-    /*------------------------------------------*/
-    
-  
-});
-
-/*
-window.addEventListener('beforeunload', function (e) {
-
-  console.log("cierre pagina")
-
-  api.send("cierre-de-aplicacion",new Date())
-
-})
-*/
+    })
 </script>
 
 </html>

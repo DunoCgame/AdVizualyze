@@ -1,0 +1,15 @@
+/*------------------Time-----------------------*/
+
+#containnerContador {
+    background: #0c10174f;
+    position: absolute;
+    padding: 4px;
+    left: 39%;
+    top: 22px;
+    z-index: 99999;
+}
+#Contador {
+    color: #ffffff;
+    font-size: 27px;
+}
+/*------------------Time-----------------------*/

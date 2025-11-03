@@ -1,171 +1,371 @@
-<html>
-
-<style type="text/css">
-
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
 *{
- margin: 0px;
- padding: 0px;
+    margin: 0px;
+    padding: 0px;
+}
+body {
+    margin: 0;
+    overflow: hidden;
+    font-family: sans-serif;
+    background: #0c0236;
 }
 
+.slideshow {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      transition: transform 1s ease-in-out;
+} 
 
-.area {
-    width: 100%;
-    height: 100%;
-    z-index: 0;
-    position: relative;
-    display: none;
+.slide {
+      min-width: 100vw;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
 }
-
-.article{
-    border: 1px solid #2980b9;
+/*------------------------*/
+.article {
     position: absolute;
-    cursor: move;
     display: flex;
     flex-direction: column;
     justify-content: center;
-    padding: 5px;
-    box-sizing: border-box;
     align-items: center;
-    /*--------------------------------*/
-    background-position:center;
-    background-size:cover;
-    background-repeat:no-repeat;
+    overflow: hidden;
 }
 
-/**************/
+
+.imagen-area{
+    width: 100%;
+    height: 100%;
+} 
+
+
+.imagen-square{
+    width: 100%;
+    height: 100%;
+    object-fit: fill;
+}
+
+.text-content{
+    padding:3px;
+}
+
 </style>
-
-<main class="slideshow" id="contenedor">
-
-</main>
-<audio id="audio" src="" loop autoplay=""></audio>
+</head>
+<body>
+<div id="slideshow" class="slideshow"></div>
+<audio id="audio" src="" loop></audio>
 <script src="assets/publish_assets/javascript/Socket.IOv3.0.1.js"></script>
-<script type="text/javascript">
+<script>
+const socket = io("http://192.168.1.70:3000", { withCredentials: true });
+
+const slideshow = document.getElementById("slideshow");
+const audio = document.getElementById('audio');
+let index = 0;
+
+let slidedata = [];
 
 
-let socket = io("http://192.168.1.70:3000",{
+/*
+let slidedata = [
+    {
+        "id": "90342580-7911-4123-814a-0f86d5e87b36",
+        "name_area": "Nombre1",
+        "background": "linear-gradient(rgb(0, 0, 0), rgb(0, 24, 204))",
+        "imageURL": "http://192.168.1.70:3000/ice-cream-1.jpg",
+        "video": "",
+        "sound":"http://192.168.1.70:3000/Alejandro Sanz - Corazón Partio Lyrics Letra.mp3",
+        "duration": 20000,
+        "product": [
+            {
+                "id": "resizable-div-1761883125731-llzjyesle",
+                "width": "31.5475%",
+                "height": "59.3061%",
+                "top": "9.51953%",
+                "left": "59.2425%",
+                "right": "",
+                "background": "rgb(104, 151, 225)",
+                "imageURL": "http://192.168.1.70:3000/Helado.png",
+                "Text": {
+                    "contenidoHTML": "",
+                    "posicionVertical": "undefined",
+                    "posicionHorizontal": "undefined",
+                    "left": "undefined",
+                    "top": "undefined",
+                    "width": "undefined",
+                    "height": "undefined",
+                    "backgroundColor": "rgb(104, 151, 225)"
+                }
+            },
+            {
+                "id": "resizable-div-1761915951306-6kb3tng16",
+                "width": "27.7703%",
+                "height": "41.2654%",
+                "top": "8.01974%",
+                "left": "4.15544%",
+                "right": "",
+                "background": "rgb(80, 147, 158)",
+                "imageURL": "",
+                "Text": {
+                    "contenidoHTML": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+                    "posicionVertical": "flex-start",
+                    "posicionHorizontal": "flex-start",
+                    "backgroundColor": "rgb(80, 147, 158)"
+                }
+            },
+            {
+                "id": "resizable-div-1761916377322-q8libwzju",
+                "width": "25%",
+                "height": "35%",
+                "top": "54.6345%",
+                "left": "3.77767%",
+                "right": "",
+                "background": "rgb(133, 194, 5)",
+                "imageURL": "",
+                "Text": {
+                  
+                    "contenidoHTML": "<font color=\"#ffffff\">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s.</font>",
+                    "posicionVertical": "flex-start",
+                    "posicionHorizontal": "flex-start",
+                    "backgroundColor": "rgb(133, 194, 5)"
+                }
+            }
+        ]
+    },
+    {
+        "id": "954adf65-bf9b-4beb-971d-69950154f999",
+        "name_area": "Nombre2",
+        "background": "linear-gradient(224deg, rgb(250, 37, 0), rgb(2, 43, 247))",
+        "imageURL": "",
+        "video": "http://192.168.1.70:3000/Iron%20Maiden%20on%20a%20Triple%20Neck%20Guitar%20-%20Luca%20Stricagnoli%20-%20Fingerstyle%20Guitar.mp4",
+        "duration": 100000,
+        "product": []
+    },
+    {
+        "id": "3f37cda6-0b10-4b48-8051-d59307b9ee99",
+        "name_area": "Nombre3",
+        "background": "linear-gradient(119deg, rgb(0, 255, 8), rgb(224, 165, 0))",
+        "imageURL": "http://192.168.1.70:3000/pizza-1.jpg",
+        "video": "",
+        "duration": 30000,
+        "product": [
+            {
+                "id": "resizable-div-1761883046344-w77agb4gl",
+                "width": "25%",
+                "height": "35%",
+                "top": "7.76912%",
+                "left": "3.57143%",
+                "right": "",
+                "background": "rgb(83, 60, 59)",
+                "imageURL": "http://192.168.1.70:3000/IMG-20240306-WA0018.jpg",
+                "Text": ""
+            },
+            {
+                "id": "resizable-div-1761883059824-9naqt6zpd",
+                "width": "25%",
+                "height": "35%",
+                "top": "33.332%",
+                "left": "64.7817%",
+                "right": "",
+                "background": "rgb(205, 21, 2)",
+                "imageURL": "",
+                "Text": {
+                    "contenidoHTML": "pppppppppppppppppppppp",
+                    "posicionVertical": "flex-start",
+                    "posicionHorizontal": "flex-start",
+                    "backgroundColor": "rgb(205, 21, 2)"
+                }
+            }
+        ]
+    }]
+*/
 
-   withCredentials:true,
 
-});
+// --- Socket Events ---
+socket.on("data-publish", Render_data);
+socket.on("Select-Musica", music => {audio.src = music; audio.play();});
+socket.on("Play", () =>{audio.play()});
+socket.on("Pause", () => audio.pause());
+socket.on("Volumen", volume => { audio.volume = volume; });
 
-socket.on("data-publish", (data) => {
-  
-        Render_data(data)
-
-});
-
-
-socket.on("Select-Musica", (data) => {
-
-  console.log('la musixa es :',data);
-
-  var audio = document.getElementById('audio');
-  audio.src = data;
-
-});
-
-
-socket.on("Play", (data) => {
-  
-        audio.play();
-
-});
-
-socket.on("Pause", (data) => {
-  
-        audio.pause();
-
-});
-
-socket.on("Volumen", (data) => {
-  
-        audio.volume = data;
-
-});
-
-
-var slides = document.getElementsByClassName("area");
-var currentSlide = 0;
-
-
-document.addEventListener("mousemove", function(event) {
-
-    audio.play();
-    
-});
-
-function showSlide(){        
-    for (var i = 0; i < slides.length; i++) {       
-          slides[i].style.display = "none";
-    }
-
-    slides[currentSlide].style.display = "block";
-}
-
-function nextSlide(){
-    currentSlide++;
-    if (currentSlide >= slides.length) {
-             currentSlide = 0;
-    }
-    showSlide();
-}
-
-if(document.getElementById("contenedor").childNodes.length>0){
-
-        setInterval(nextSlide,20000);
-
-}
-
-    
-/**************************************************************/
-
-/***********************************/
-
-let Contain_areas = document.getElementById("contenedor");
+// --- Render Functions ---//
 
 function Render_data(data){
 
-    Contain_areas.innerHTML="";
-
-    data.forEach(function(area,index){
+    console.log(data)
+    slidedata = []
+    slidedata = data;
+    slideshow.innerHTML = ""; // Limpia slides anteriores
     
-        Contain_areas.innerHTML+=`<section class="containnerArea"><div class="area" id="area"></div></section>`;
-        document.getElementsByClassName("containnerArea")[index].style.background = area.background;
-       /*--------------------------------------*/
-        let area_product =  document.getElementsByClassName("area")[index];
+    slidedata.forEach((slide, i) => {
+        
+        const div = document.createElement('div');
+        div.className = 'slide';
+        div.style.background = slide.background || "#222";
+        slideshow.appendChild(div);
 
-        area.product.forEach(function(product,index){
+        // Imagen de fondo
+        if (slide.imageURL){
 
-            let area = document.createElement("div");
-           /* area.innerHTML=product.width+" | "+product.height;*/
-            area.className="article";
-            area.style.left = product.left;
-            area.style.top = product.top;
-            area.style.width = product.width; // Tamaño inicial un poco más grande
-            area.style.height = product.height;
-            area.style.background = product.background;
-            area.style.backgroundSize = 'cover';
-            area.style.backgroundPosition = 'center';
-            area.style.backgroundRepeat = 'no-repeat';
+            const img = document.createElement('img');
+            img.src =slide.imageURL;
+            img.className = "imagen-area";
+            div.appendChild(img);
+        }
+ 
+        // Video
+        if (slide.video){
+            
+            const video = document.createElement('video');
+            video.src = slide.video;
+            video.id = `media${i}`;
+            video.className="videoplay"
+            video.muted = false;
+            div.appendChild(video);
 
-            area_product.appendChild(area);
+        }
 
-            console.log(product.background)
+        if(slide.sound) {
+            const audio = document.createElement('audio');
+            audio.src = slide.sound;
+            audio.id = `media${i}`;
+            div.appendChild(audio);
+        }
 
-        })
-       /*--------------------------------------*/
+        /*-------------Productos---------------*/
 
+        (slide.product || []).forEach(product =>{
+          
+            const article = document.createElement("div");
+            article.className = "article";
 
+            Object.assign(article.style,{
+
+                left: product.left,
+                top: product.top,
+                width: product.width,
+                height: product.height,
+                background: product.background || "transparent"
+
+            });           
+
+            //Imagen del producto
+            if (product.imageURL){
+
+                const img = document.createElement('img');
+                img.src = product.imageURL;
+                img.className = "imagen-square";
+                article.appendChild(img);
+            }
+
+            //Texto del producto
+            if (product.Text.contenidoHTML!=""){
+
+                RenderTextenDiv(article, product.Text);
+
+            }           
+
+            div.appendChild(article);
+
+        }); 
+
+        /*--------------Productos----------------*/
     });
 
+    index = 0;
+    nextSlide();
+}
+
+function nextSlide(){
+
+    if (slidedata.length === 0) return;
+
+    /*  
+    if (index % 2 === 0) {
+        slideshow.classList.remove('vertical');
+        slideshow.style.transform = `translateX(-${index * 100}vw)`;
+    } 
+    else {
+        slideshow.classList.add('vertical');
+        slideshow.style.transform =`translateY(-${index * 100}vh)`;
+    }
+    */
+
+    slideshow.style.transform = `translateX(-${index * 100}vw)`;
+
+    playMediaForSlide(index);
+
+    console.log(index+'/ '+slidedata[index].duration)
+
+    const nextTime = slidedata[index].duration; // Valor por defecto
+    index = (index + 1) % slidedata.length;
+
+    setTimeout(nextSlide, nextTime);
+}
+
+/*------------------------------------------------------*/
+
+function stopAllMedia(){
+  
+  slidedata.forEach((_, i) => {
+    const media = document.getElementById(`media${i}`);
+    if (media){
+      media.pause();
+      media.currentTime = 0;
+    }
+  });
+
+}
+
+function playMediaForSlide(i) {
+ 
+  stopAllMedia();
+  const media = document.getElementById(`media${i}`);
+  if (media) media.play();
+
+}
+
+function RenderTextenDiv(divElement,datosObjeto){
+    
+    let finalHTML = '';
+
+    if (datosObjeto.contenidoHTML){ finalHTML += datosObjeto.contenidoHTML; }
+
+    let textContentDiv = divElement.querySelector('.text-content');
+   
+    if (!textContentDiv){
+        textContentDiv = document.createElement('div');
+        textContentDiv.className = 'text-content';
+        divElement.appendChild(textContentDiv);
+    }
+    
+    textContentDiv.innerHTML = finalHTML;
+
+    // Flex alignment
+    divElement.style.alignItems = datosObjeto.posicionHorizontal || 'flex-start';
+    divElement.style.justifyContent = datosObjeto.posicionVertical || 'flex-start';
+    
+    // Tamaño y posición
+    if (datosObjeto.left) divElement.style.left = `${datosObjeto.left}%`;
+    if (datosObjeto.top) divElement.style.top = `${datosObjeto.top}%`;
+    if (datosObjeto.width) divElement.style.width = `${datosObjeto.width}%`;
+    if (datosObjeto.height) divElement.style.height = `${datosObjeto.height}%`;
+    
+    // Fondo
+    if (datosObjeto.backgroundColor) divElement.style.backgroundColor = datosObjeto.backgroundColor;
 
 }
 
 
-
-
-
-
 </script>
+</body>
 </html>
+

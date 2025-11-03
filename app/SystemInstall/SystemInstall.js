@@ -4,11 +4,9 @@ const fs = require('fs');
 const os = require('os');
 const { v4: uuidv4 } = require('uuid');
 const CryptoJS = require("crypto-js");
-
 const PathDB = require(path.join(__dirname,'../Path_db.js'));
 const App_config = require(PathDB.App_config);
 const Data_App_Square = require(PathDB.data_square);
-
 const {Save_data_init_time} = require('../Trial_time_app.js');
 
 module.exports = function SystemInstall(mainWindow){
@@ -31,7 +29,7 @@ module.exports = function SystemInstall(mainWindow){
         window_SystemInstall.loadFile("app/SystemInstall/SystemInstall.html")
 
 
-       //window_SystemInstall.webContents.openDevTools()   
+      // window_SystemInstall.webContents.openDevTools()   
         
         window_SystemInstall.once('ready-to-show',() => {
 
@@ -45,8 +43,6 @@ module.exports = function SystemInstall(mainWindow){
 
 /*----------------------------------------------------------------*/
 function ClearDataSystemApp(){
-
-    /*--------------------------------------------------*/
     const info = {
             "status":false,
             "code":"",
@@ -76,18 +72,13 @@ function ClearDataSystemApp(){
         if (err) throw err;
         console.log('reset key file!');
     });
-    /*--------------------------------------------------*/
-
-    let date_time = {"TiempoInicial":"","TiempoFinal":""}
+    /*----------Status opt-activo-inactivo-completado---------------------------------------*/
+    let date_time = {"status_trial_time":"deactivated","TiempoInicial":"","TiempoFinal":""}
 
     fs.writeFile(PathDB.Time_Trial,JSON.stringify(date_time), function (err) {
         if (err) throw err;
         console.log('reset Time trial Saved!');
     });
-
-
-
-
 }
 
 /*----------------------------------------------------------------*/
@@ -129,7 +120,7 @@ function Read_key_code(code_app_recive){
 
     if(decryptedMessage === KeyApp_control){
 
-        console.log("clave valida")
+            console.log("clave valida")
             Generate_key_app_admin(id_app)
     }
     else{
@@ -144,7 +135,7 @@ function Read_key_code(code_app_recive){
 
 function Generate_key_app_admin(code){
 
- console.log("Install App....")
+  console.log("Install App....")
 
     let KeyApp_control = require(PathDB.KeyRegistre);
 
@@ -189,10 +180,13 @@ function Generate_key_app_admin(code){
     const contenido = [
       {
         "id":uuidv4(),
-        "name_area":"Default-"+(Data_App_Square.length+1),
-        "background":"linear-gradient(0deg, #003399 0%, #660066 100%)",
-        "product":[]
-             
+          "name_area":"Nueva area sin Nombre",
+            "background":"linear-gradient(0deg, #003399 0%, #660066 100%)",
+            "video":"",
+            "imageURL":"",
+            "sound":"",
+            "duration":1000,
+            "product":[]          
       }
     ];
 
@@ -306,20 +300,18 @@ function Install_App_trial(){
                 "hostname":os.hostname(),
                 "platform":os.platform(),
                 "cpu":os.cpus()[0].model
-          },
-          "server":{
-            "ip":dataOs["address"],
-            "port":"3000"
-          }
+            },
+            "server":{
+              "ip":dataOs["address"],
+              "port":"3000"
+            }
     };
 
     fs.writeFile(PathDB.App_config,JSON.stringify(info), function (err) {
         if (err) throw err;
         console.log('App config Saved!');
     });
-
     /*--------------------------------------------------*/
-
     fs.writeFile(PathDB.data_square,JSON.stringify([]), (err) => {
               if (err) throw err;
               console.log('Clear file!');
@@ -328,10 +320,13 @@ function Install_App_trial(){
     const contenido = [
               {
                 "id":uuidv4(),
-                "name_area":"Default-"+(Data_App_Square.length+1),
+                "name_area":"Nueva area sin Nombre",
                 "background":"linear-gradient(0deg, #003399 0%, #660066 100%)",
-                "product":[]
-                     
+                "video":"",
+                "imageURL":"",
+                "sound":"",
+                "duration":1000,
+                "product":[]                     
               }
     ];
 
@@ -341,7 +336,6 @@ function Install_App_trial(){
     });
 
     /*--------------------------------------------------*/
-
     if (!fs.existsSync(PathDB["upload"])) {
 
             console.log('carpeta no upload existe.');
@@ -354,9 +348,9 @@ function Install_App_trial(){
             });
     }
     else {
-            console.log('La carpeta upload ya existe.');
+      console.log('La carpeta upload ya existe.');
 
-       fs.readdir(PathDB["upload"], (err, files) => {
+      fs.readdir(PathDB["upload"], (err, files) => {
           if (err) {
             console.error('Error al leer el directorio:', err);
             return;
@@ -372,7 +366,7 @@ function Install_App_trial(){
               }
             });
           });
-        });
+      });
     } 
 
     if (!fs.existsSync(PathDB["musica"])) {
@@ -386,7 +380,8 @@ function Install_App_trial(){
                            console.log('Se ha creado la carpeta musica correctamente.');
                       });
       
-    } else {
+    } 
+    else {
              console.log('La carpeta musica ya existe.');
                fs.readdir(PathDB["musica"], (err, files) => {
                   if (err) {
